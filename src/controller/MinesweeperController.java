@@ -1,28 +1,28 @@
 package controller;
 
-import java.util.Random;
+import model.MinesweeperModel;
 
 public class MinesweeperController {
-	private final String BOMB = "x";
-	private final String EMPTY = " ";
-	private String [][] boardArray = new String[8][8];
-	private int bombCount = 10;
+	private static String[][] board;
 	
-	public MinesweeperController() {
-		Random rand = new Random();
-		// Starting Positions
-		while (bombCount > 0) {
-			int x = rand.nextInt(8);
-			int y = rand.nextInt(8);
-			if (boardArray[x][y] != null)
-				continue;
-			boardArray[x][y] = BOMB;
-			// System.out.println(x + " " + y);
-			bombCount -= 1;
-		}
+	public MinesweeperController(MinesweeperModel model) {
+		board = model.getBoardArray();
 	}
 	
-	public String[][] getBoardArray() {
-		return boardArray;
+	public void printBoard() {
+		for (int i = 1; i <= 8; i++) {
+			System.out.println("  ---------------------------------");
+			System.out.print(Integer.toString(i) + " | ");
+			for (int j = 1; j <= 8; j++) {
+				if (board[i-1][j-1] != null) {
+					System.out.print(board[i-1][j-1] + " | ");
+				} else {
+					System.out.print("  | ");
+				}
+			}
+			System.out.println();
+		}
+		System.out.println("  ---------------------------------");
+		System.out.println("    a   b   c   d   e   f   g   h");
 	}
 }

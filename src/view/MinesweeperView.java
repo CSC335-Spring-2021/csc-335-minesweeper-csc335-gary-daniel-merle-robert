@@ -22,9 +22,9 @@ public class MinesweeperView extends Application implements Observer {
 	}
 	
 	public static void main(String[] args) {
-		MinesweeperController x = new MinesweeperController();
-		MinesweeperModel model = new MinesweeperModel(x);
-		model.printBoard();
+		MinesweeperModel model = new MinesweeperModel();
+		MinesweeperController controller = new MinesweeperController(model);
+		controller.printBoard();
 	}
 	
 }
