@@ -37,6 +37,15 @@ public class MinesweeperView extends Application implements Observer {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+		AnchorPane mainMenu = createGameMenu(stage);
+		Scene scene = new Scene(mainMenu,600,600);
+		
+		stage.setTitle("Minesweeper");
+		stage.setScene(scene);
+		stage.show();
+	}
+	
+	private AnchorPane createGameMenu(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
 		
 		Image menuImage = new Image("file:images/dababy.jpg");
@@ -51,6 +60,7 @@ public class MinesweeperView extends Application implements Observer {
 		newGameButton.setPrefHeight(41.0);
 		newGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(newGameButton);
+		newGameButton.setOnAction(new NewGame(stage));
 		
 		Text title = new Text("Minesweeper"); 
 		title.setLayoutX(62.0);
@@ -58,19 +68,7 @@ public class MinesweeperView extends Application implements Observer {
 		title.setFont(new Font(81.0));
 		anchorPane.getChildren().add(title);
 		
-		Scene gameScene = launchNewGame(stage);
-		newGameButton.setOnAction(new NewGame(stage, gameScene));
-		
-		Scene scene = new Scene(anchorPane,600,600);
-		
-		stage.setTitle("Minesweeper");
-		stage.setScene(scene);
-		stage.show();
-	}
-	
-	private void createGameMenu(AnchorPane anchorPane) {
-		// TODO Auto-generated method stub
-		
+		return anchorPane;
 	}
 
 	private Scene launchNewGame(Stage stage) {
@@ -91,7 +89,7 @@ public class MinesweeperView extends Application implements Observer {
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
 		resetButton.setPrefWidth(119.0);
-		resetButton.setOnAction(e -> stage.setScene(launchNewGame(stage)));
+		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0,25.0,25.0,25.0));
 		// Create Grid
@@ -101,8 +99,6 @@ public class MinesweeperView extends Application implements Observer {
 		anchorPane.getChildren().add(layout);
 		
 		return gameScene;
-		
-		
 	}
 
 	private GridPane createGameBoard() {
@@ -161,12 +157,10 @@ public class MinesweeperView extends Application implements Observer {
 		private Stage stage;
 		private double time = 0;
 		private Timer timer;
-		private Scene gameScene;
 		private TimerTask task;
 		
-		public NewGame(Stage stage, Scene scene) {
+		public NewGame(Stage stage) {
 			this.stage = stage;
-			this.gameScene = scene;
 			this.timer = new Timer();
 			this.task = new TimerTask() {
 				@Override
