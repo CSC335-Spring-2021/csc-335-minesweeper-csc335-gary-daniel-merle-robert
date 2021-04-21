@@ -17,10 +17,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -28,6 +36,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.MinesweeperModel;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.text.DecimalFormat;
@@ -37,6 +46,8 @@ public class MinesweeperView extends Application implements Observer {
 	//Test
 	private MinesweeperModel model;
 	private MinesweeperController controller;
+
+	private StackPane[][] gameTiles;
 	
 	private Text timeDisplay;
 	private static Timer timer = new Timer();
@@ -120,52 +131,46 @@ public class MinesweeperView extends Application implements Observer {
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0,25.0,25.0,25.0));
 		// Create Grid
-		GridPane board = createGameBoard();
+		gameTiles = createGameTiles();
+		GridPane board = createGameBoard(gameTiles);
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
 		
 		return gameScene;
 	}
-
-	private GridPane createGameBoard() {
-		GridPane board = new GridPane();
-		board.setPrefHeight(530.0);
-		board.setStyle("-fx-background-color: LIGHTBLUE; -fx-grid-lines-visible: true;");
-		board.setPadding(new Insets(0.0,10.0,35.0,35.0));
-		for(int i = 0; i < 12;i++) {
-			ColumnConstraints con = new ColumnConstraints();
-			con.setPrefWidth(530/12);
-			con.setHalignment(HPos.CENTER);
-			RowConstraints row = new RowConstraints();
-			row.setPrefHeight(530/12);
-			row.setValignment(VPos.CENTER);
-			board.getColumnConstraints().add(con);
-			board.getRowConstraints().add(row);
-		}
-		
-		for(int r = 0; r < 13;r++) {
-			for(int c = 0; c < 13;c++) {
-				Rectangle tile = new Rectangle(44,44);
-				tile.setOnMouseClicked(new EventHandler<MouseEvent>() {
-					
-					@Override
-					public void handle(MouseEvent event) {
-						if (event.getButton() == MouseButton.PRIMARY)
-			            {
-							tile.setFill(Color.BLACK);
-			            } else if (event.getButton() == MouseButton.SECONDARY)
-			            {
-			                //fill
-			            }
-					}
-					
-				});
-				tile.setFill(Color.DARKGRAY);
-				board.add(tile, r, c);
+	
+	private GridPane createGameBoard(StackPane[][] gameTiles) {
+		// Create gridpane and set background and insets
+		GridPane gameBoard = new GridPane();
+		gameBoard.setBackground(
+				new Background(new BackgroundFill(Color.rgb(189, 189, 189), CornerRadii.EMPTY, Insets.EMPTY)));
+		gameBoard.setPadding(new Insets(8, 8, 8, 8));
+		// Add tiles as children
+		for (int r = 0; r < 13; r++) {
+			for (int c = 0; c < 13; c++) {
+				gameBoard.add(gameTiles[r][c], c, r);
 			}
 		}
-		return board;
+		return gameBoard;
+	}
+	
+	private StackPane[][] createGameTiles() {
+		StackPane[][] stackPanes = new StackPane[13][13];
+		for (int r = 0; r < 13; r++) {
+			for (int c = 0; c < 13; c++) {
+				Rectangle square = new Rectangle(44,44);
+				square.setFill(Color.DARKGRAY);
+				// Create stack pane and set padding and background
+				StackPane tile = new StackPane(square);
+				tile.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
+						BorderWidths.DEFAULT)));
+				tile.setOnMouseClicked(new TileClicked(r,c));
+				// Set mouse click handler, add to list
+				stackPanes[r][c] = tile;
+			}
+		}
+		return stackPanes;
 	}
 
 	@Override
@@ -185,6 +190,35 @@ public class MinesweeperView extends Application implements Observer {
 			//Resets time back to 0 if new game is called
 			stage.setScene(launchNewGame(stage));
 			time = 0;
+		}
+	}
+	
+	private class TileClicked implements EventHandler<MouseEvent> {
+		private int row;
+		private int col;
+
+		/**
+		 * Initializes the event handler with the coordinates of the tile it is
+		 * associated with.
+		 * 
+		 * @param row A row coordinate
+		 * @param col A column coordinate
+		 */
+		public TileClicked(int row, int col) {
+			this.row = row;
+			this.col = col;
+		}
+
+		@Override
+		public void handle(MouseEvent event) {
+			if (event.getButton() == MouseButton.PRIMARY)
+            {
+				controller.makeMove(row, col);
+				//tile.setFill(Color.BLACK);
+            } else if (event.getButton() == MouseButton.SECONDARY)
+            {
+                //fill
+            }
 		}
 	}
 }

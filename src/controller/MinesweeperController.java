@@ -27,10 +27,12 @@ public class MinesweeperController {
 	}
 	
 	public boolean isGameOver() {
+		//TODO: Implement
 		return true;
 	}
 	
 	public void makeMove(int row, int col) {
-		
+		System.out.println("Tile clicked");
+		//TODO: Implement
 	}
 }
