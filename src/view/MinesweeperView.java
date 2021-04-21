@@ -144,8 +144,8 @@ public class MinesweeperView extends Application implements Observer {
 			board.getRowConstraints().add(row);
 		}
 		
-		for(int r = 0; r < 12;r++) {
-			for(int c = 0; c < 12;c++) {
+		for(int r = 0; r < 13;r++) {
+			for(int c = 0; c < 13;c++) {
 				Rectangle tile = new Rectangle(44,44);
 				tile.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					

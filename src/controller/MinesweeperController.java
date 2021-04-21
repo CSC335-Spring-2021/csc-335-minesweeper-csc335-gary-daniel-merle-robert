@@ -25,4 +25,12 @@ public class MinesweeperController {
 		System.out.println("  ---------------------------------");
 		System.out.println("    a   b   c   d   e   f   g   h");
 	}
+	
+	public boolean isGameOver() {
+		return true;
+	}
+	
+	public void makeMove(int row, int col) {
+		
+	}
 }
