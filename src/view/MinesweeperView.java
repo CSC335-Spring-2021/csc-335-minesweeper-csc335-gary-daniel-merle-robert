@@ -40,13 +40,14 @@ public class MinesweeperView extends Application implements Observer {
 	
 	private Text timeDisplay;
 	private static Timer timer = new Timer();
-	private static boolean startGame = true;
+	private static boolean startOfGame = true;
 	private double time = 0;
 	private TimerTask task = new TimerTask() {
 		@Override
 		public void run() {
 			time += 0.01;
 			DecimalFormat f = new DecimalFormat("#0.00");
+			//Needed to prevent user interface from freezing
 			Platform.runLater(() -> {
 				timeDisplay.setText("TIME: " + f.format(time));
 			});
@@ -101,18 +102,19 @@ public class MinesweeperView extends Application implements Observer {
 		topBar.setPrefWidth(600.0);
 		topBar.setSpacing(400.0);
 		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
-		// Create timer text TO DO
-		timeDisplay = new Text("TIME");
+		// Create timer text
+		timeDisplay = new Text("TIME: 0.00");
 		timeDisplay.setFont(new Font(18.0));
 		topBar.getChildren().add(timeDisplay);
 		// Create New Game Button
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
 		resetButton.setPrefWidth(119.0);
-		if(startGame) {
+		//A task can only be set once otherwise an exception will be thrown
+		if(startOfGame) {
 			//Every 10 milliseconds the run function for task is called
 			timer.scheduleAtFixedRate(task, 10, 10);
-			startGame = false;
+			startOfGame = false;
 		}
 		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
@@ -163,7 +165,6 @@ public class MinesweeperView extends Application implements Observer {
 				board.add(tile, r, c);
 			}
 		}
-		
 		return board;
 	}
 
@@ -182,8 +183,8 @@ public class MinesweeperView extends Application implements Observer {
 		@Override
 		public void handle(ActionEvent event) {
 			//Resets time back to 0 if new game is called
-			time = 0;
 			stage.setScene(launchNewGame(stage));
+			time = 0;
 		}
 	}
 }
