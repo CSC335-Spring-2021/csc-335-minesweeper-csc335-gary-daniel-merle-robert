@@ -34,7 +34,7 @@ import java.text.DecimalFormat;
 
 @SuppressWarnings("deprecation")
 public class MinesweeperView extends Application implements Observer {
-	
+	//Test
 	private MinesweeperModel model;
 	private MinesweeperController controller;
 	
