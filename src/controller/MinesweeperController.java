@@ -31,8 +31,8 @@ public class MinesweeperController {
 		return true;
 	}
 	
-	public void makeMove(int row, int col) {
-		System.out.println("Tile clicked");
+	public void makeMove(int row, int col, String input) {
+		System.out.println(input);
 		//TODO: Implement
 	}
 }

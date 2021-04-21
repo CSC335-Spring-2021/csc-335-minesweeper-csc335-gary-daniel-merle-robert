@@ -1,15 +1,16 @@
 package view;
 
 import javafx.application.*;
+import javafx.collections.ObservableList;
+
 import java.util.Observable;
 import java.util.Observer;
 
 import controller.MinesweeperController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -23,11 +24,9 @@ import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -35,7 +34,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.MinesweeperBoard;
 import model.MinesweeperModel;
+import model.Tile;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,7 +44,7 @@ import java.text.DecimalFormat;
 
 @SuppressWarnings("deprecation")
 public class MinesweeperView extends Application implements Observer {
-	//Test
+	
 	private MinesweeperModel model;
 	private MinesweeperController controller;
 
@@ -64,6 +65,26 @@ public class MinesweeperView extends Application implements Observer {
 			});
 		}
 	};
+	
+	@Override
+	public void update(Observable o, Object arg) {
+		MinesweeperBoard newBoard = (MinesweeperBoard) arg;
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				StackPane gameTile = gameTiles[i][j];
+				Tile tile = newBoard.getTile(i, j);
+				ObservableList<Node> list = gameTile.getChildren();
+				for (Node node : list) {
+					if (node instanceof Rectangle) {
+						//Condition 1: Covered + flagged
+						//Condition 2: Covered + no flag
+						//Condition 3: Uncovered + has mine
+						//Condition 4: Uncovered + no mine
+					}
+				}
+			}
+		}
+	}
 	
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -107,16 +128,19 @@ public class MinesweeperView extends Application implements Observer {
 		AnchorPane anchorPane = new AnchorPane();
 		Scene gameScene = new Scene(anchorPane,619,694);
 		VBox layout = new VBox();
+		
 		// Create timer and new game button at top
 		HBox topBar = new HBox();
 		topBar.setPrefHeight(70.0);
 		topBar.setPrefWidth(600.0);
 		topBar.setSpacing(400.0);
 		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
+		
 		// Create timer text
 		timeDisplay = new Text("TIME: 0.00");
 		timeDisplay.setFont(new Font(18.0));
 		topBar.getChildren().add(timeDisplay);
+		
 		// Create New Game Button
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
@@ -130,6 +154,7 @@ public class MinesweeperView extends Application implements Observer {
 		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0,25.0,25.0,25.0));
+		
 		// Create Grid
 		gameTiles = createGameTiles();
 		GridPane board = createGameBoard(gameTiles);
@@ -172,11 +197,6 @@ public class MinesweeperView extends Application implements Observer {
 		}
 		return stackPanes;
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-	}
 	
 	private class NewGame implements EventHandler<ActionEvent> {	
 		private Stage stage;
@@ -213,11 +233,10 @@ public class MinesweeperView extends Application implements Observer {
 		public void handle(MouseEvent event) {
 			if (event.getButton() == MouseButton.PRIMARY)
             {
-				controller.makeMove(row, col);
-				//tile.setFill(Color.BLACK);
+				controller.makeMove(row, col, "p");
             } else if (event.getButton() == MouseButton.SECONDARY)
             {
-                //fill
+            	controller.makeMove(row, col, "s");
             }
 		}
 	}
