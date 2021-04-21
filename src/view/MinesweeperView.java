@@ -89,7 +89,8 @@ public class MinesweeperView extends Application implements Observer {
 						}
 						//Condition 3: Uncovered + has mine
 						else if(!tile.isCovered && tile.hasMine) {
-							//TODO: Need to check if this if statement is necessary
+							Image img = new Image("file:images/bombUncovered.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
 						}
 						//Condition 4: Uncovered + no mine nearby
 						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(0)) {
@@ -134,6 +135,10 @@ public class MinesweeperView extends Application implements Observer {
 						//Condition 12: Uncovered + 8 mine nearby
 						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(8)) {
 							Image img = new Image("file:images/8.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						else {
+							Image img = new Image("file:images/blackTile.png");
 							((Rectangle)node).setFill(new ImagePattern(img));
 						}
 					}
