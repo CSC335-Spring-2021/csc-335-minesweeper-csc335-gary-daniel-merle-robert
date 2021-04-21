@@ -29,6 +29,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.MinesweeperModel;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.text.DecimalFormat;
 
 public class MinesweeperView extends Application implements Observer {
 
@@ -56,7 +59,7 @@ public class MinesweeperView extends Application implements Observer {
 		anchorPane.getChildren().add(title);
 		
 		Scene gameScene = launchNewGame(stage);
-		newGameButton.setOnAction(e -> stage.setScene(gameScene));
+		newGameButton.setOnAction(new NewGame(stage, gameScene));
 		
 		Scene scene = new Scene(anchorPane,600,600);
 		
@@ -154,4 +157,31 @@ public class MinesweeperView extends Application implements Observer {
 		launch(args);
 	}
 	
+	private class NewGame implements EventHandler<ActionEvent> {	
+		private Stage stage;
+		private double time = 0;
+		private Timer timer;
+		private Scene gameScene;
+		private TimerTask task;
+		
+		public NewGame(Stage stage, Scene scene) {
+			this.stage = stage;
+			this.gameScene = scene;
+			this.timer = new Timer();
+			this.task = new TimerTask() {
+				@Override
+				public void run() {
+					time += 0.01;
+					DecimalFormat f = new DecimalFormat("#0.00");
+				    System.out.println(f.format(time));
+				}
+			};
+		}
+		
+		@Override
+		public void handle(ActionEvent event) {
+			stage.setScene(launchNewGame(stage));
+			timer.scheduleAtFixedRate(task, 10, 10);
+		}
+	}
 }
