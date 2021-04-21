@@ -37,17 +37,4 @@ public class Tile {
 	public void setHasMine(boolean hasMine) {
 		this.hasMine = hasMine;
 	}
-	
-	public boolean getIsCovered() {
-		return isCovered;
-	}
-	
-	public boolean getIsFlagged() {
-		return isFlagged;
-	}
-	
-	public boolean getHasMine() {
-		return hasMine;
-	}
-
 }

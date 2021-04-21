@@ -30,6 +30,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -69,17 +70,72 @@ public class MinesweeperView extends Application implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		MinesweeperBoard newBoard = (MinesweeperBoard) arg;
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
+		for (int i = 0; i < 13; i++) {
+			for (int j = 0; j < 13; j++) {
 				StackPane gameTile = gameTiles[i][j];
 				Tile tile = newBoard.getTile(i, j);
 				ObservableList<Node> list = gameTile.getChildren();
 				for (Node node : list) {
 					if (node instanceof Rectangle) {
 						//Condition 1: Covered + flagged
+						if(tile.isCovered && tile.isFlagged) {
+							Image img = new Image("file:images/flagged_tile.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
 						//Condition 2: Covered + no flag
+						else if(tile.isCovered && !tile.isFlagged) {
+							Image img = new Image("file:images/covered_tile.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
 						//Condition 3: Uncovered + has mine
-						//Condition 4: Uncovered + no mine
+						else if(!tile.isCovered && tile.hasMine) {
+							//TODO: Need to check if this if statement is necessary
+						}
+						//Condition 4: Uncovered + no mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(0)) {
+							Image img = new Image("file:images/0.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 5: Uncovered + 1 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(1)) {
+							Image img = new Image("file:images/1.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 6: Uncovered + 2 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(2)) {
+							Image img = new Image("file:images/2.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 7: Uncovered + 3 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(3)) {
+							Image img = new Image("file:images/3.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 8: Uncovered + 4 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(4)) {
+							Image img = new Image("file:images/4.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 9: Uncovered + 5 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(5)) {
+							Image img = new Image("file:images/5.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 10: Uncovered + 6 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(6)) {
+							Image img = new Image("file:images/6.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 11: Uncovered + 7 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(7)) {
+							Image img = new Image("file:images/7.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
+						//Condition 12: Uncovered + 8 mine nearby
+						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(8)) {
+							Image img = new Image("file:images/8.png");
+							((Rectangle)node).setFill(new ImagePattern(img));
+						}
 					}
 				}
 			}
@@ -90,6 +146,9 @@ public class MinesweeperView extends Application implements Observer {
 	public void start(Stage stage) throws Exception {
 		this.model = new MinesweeperModel();
 		this.controller = new MinesweeperController(model);
+		//TODO: Get rid of comments when model is done
+		//model.addObserver(this);
+		//model.notifies();
 		AnchorPane mainMenu = createGameMenu(stage);
 		Scene scene = new Scene(mainMenu,600,600);
 		
@@ -185,11 +244,11 @@ public class MinesweeperView extends Application implements Observer {
 		for (int r = 0; r < 13; r++) {
 			for (int c = 0; c < 13; c++) {
 				Rectangle square = new Rectangle(44,44);
-				square.setFill(Color.DARKGRAY);
+				Image img = new Image("file:images/covered_tile.png");
+				square.setFill(new ImagePattern(img));
 				// Create stack pane and set padding and background
 				StackPane tile = new StackPane(square);
-				tile.setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, CornerRadii.EMPTY,
-						BorderWidths.DEFAULT)));
+				tile.setBorder(new Border(new BorderStroke(Color.rgb(123, 123, 123), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
 				tile.setOnMouseClicked(new TileClicked(r,c));
 				// Set mouse click handler, add to list
 				stackPanes[r][c] = tile;
