@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -121,11 +122,16 @@ public class MinesweeperView extends Application implements Observer {
 			for(int c = 0; c < 12;c++) {
 				Rectangle tile = new Rectangle(44,44);
 				tile.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
+					
 					@Override
-					public void handle(MouseEvent arg0) {
-						tile.setFill(Color.BLACK);
-						
+					public void handle(MouseEvent event) {
+						if (event.getButton() == MouseButton.PRIMARY)
+			            {
+							tile.setFill(Color.BLACK);
+			            } else if (event.getButton() == MouseButton.SECONDARY)
+			            {
+			                //fill
+			            }
 					}
 					
 				});
