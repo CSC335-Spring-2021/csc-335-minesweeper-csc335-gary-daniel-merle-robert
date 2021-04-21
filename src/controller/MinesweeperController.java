@@ -32,7 +32,12 @@ public class MinesweeperController {
 	}
 	
 	public void makeMove(int row, int col, String input) {
-		System.out.println(input);
 		//TODO: Implement
+		if(input.equals("p")) {
+			System.out.println("Primary Mouse Click");
+		}
+		else if(input.equals("s")) {
+			System.out.println("Right Mouse Click");
+		}
 	}
 }
