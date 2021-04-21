@@ -35,11 +35,28 @@ import java.text.DecimalFormat;
 @SuppressWarnings("deprecation")
 public class MinesweeperView extends Application implements Observer {
 	
+	private MinesweeperModel model;
+	private MinesweeperController controller;
+	
 	private Text timeDisplay;
-	private static Timer timer;
-
+	private static Timer timer = new Timer();
+	private static boolean startGame = true;
+	private double time = 0;
+	private TimerTask task = new TimerTask() {
+		@Override
+		public void run() {
+			time += 0.01;
+			DecimalFormat f = new DecimalFormat("#0.00");
+			Platform.runLater(() -> {
+				timeDisplay.setText("TIME: " + f.format(time));
+			});
+		}
+	};
+	
 	@Override
 	public void start(Stage stage) throws Exception {
+		this.model = new MinesweeperModel();
+		this.controller = new MinesweeperController(model);
 		AnchorPane mainMenu = createGameMenu(stage);
 		Scene scene = new Scene(mainMenu,600,600);
 		
@@ -92,6 +109,11 @@ public class MinesweeperView extends Application implements Observer {
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
 		resetButton.setPrefWidth(119.0);
+		if(startGame) {
+			//Every 10 milliseconds the run function for task is called
+			timer.scheduleAtFixedRate(task, 10, 10);
+			startGame = false;
+		}
 		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0,25.0,25.0,25.0));
@@ -150,34 +172,18 @@ public class MinesweeperView extends Application implements Observer {
 		// TODO Auto-generated method stub
 	}
 	
-	public static void main(String[] args) {
-		MinesweeperModel model = new MinesweeperModel();
-		MinesweeperController controller = new MinesweeperController(model);
-		launch(args);
-	}
-	
 	private class NewGame implements EventHandler<ActionEvent> {	
 		private Stage stage;
-		private double time = 0;
-		private TimerTask task;
 		
 		public NewGame(Stage stage) {
 			this.stage = stage;
-			timer = new Timer();
-			this.task = new TimerTask() {
-				@Override
-				public void run() {
-					time += 0.01;
-					DecimalFormat f = new DecimalFormat("#0.00");
-					timeDisplay.setText(f.format(time));
-				}
-			};
 		}
 		
 		@Override
 		public void handle(ActionEvent event) {
+			//Resets time back to 0 if new game is called
+			time = 0;
 			stage.setScene(launchNewGame(stage));
-			timer.scheduleAtFixedRate(task, 10, 10);
 		}
 	}
 }
