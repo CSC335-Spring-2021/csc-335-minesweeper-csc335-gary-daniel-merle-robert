@@ -17,7 +17,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -33,7 +32,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.text.DecimalFormat;
 
+@SuppressWarnings("deprecation")
 public class MinesweeperView extends Application implements Observer {
+	
+	private Text timeDisplay;
+	private static Timer timer;
 
 	@Override
 	public void start(Stage stage) throws Exception {
@@ -82,9 +85,9 @@ public class MinesweeperView extends Application implements Observer {
 		topBar.setSpacing(400.0);
 		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
 		// Create timer text TO DO
-		Text time = new Text("TIME");
-		time.setFont(new Font(18.0));
-		topBar.getChildren().add(time);
+		timeDisplay = new Text("TIME");
+		timeDisplay.setFont(new Font(18.0));
+		topBar.getChildren().add(timeDisplay);
 		// Create New Game Button
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
@@ -156,18 +159,17 @@ public class MinesweeperView extends Application implements Observer {
 	private class NewGame implements EventHandler<ActionEvent> {	
 		private Stage stage;
 		private double time = 0;
-		private Timer timer;
 		private TimerTask task;
 		
 		public NewGame(Stage stage) {
 			this.stage = stage;
-			this.timer = new Timer();
+			timer = new Timer();
 			this.task = new TimerTask() {
 				@Override
 				public void run() {
 					time += 0.01;
 					DecimalFormat f = new DecimalFormat("#0.00");
-				    System.out.println(f.format(time));
+					timeDisplay.setText(f.format(time));
 				}
 			};
 		}
