@@ -105,7 +105,7 @@ public class MinesweeperView extends Application implements Observer {
 
 	private Scene launchNewGame(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
-		Scene gameScene = new Scene(anchorPane,600,600);
+		Scene gameScene = new Scene(anchorPane,619,694);
 		VBox layout = new VBox();
 		// Create timer and new game button at top
 		HBox topBar = new HBox();
