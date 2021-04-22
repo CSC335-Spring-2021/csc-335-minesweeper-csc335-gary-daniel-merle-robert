@@ -37,5 +37,4 @@ public class Tile {
 	public void setHasMine(boolean hasMine) {
 		this.hasMine = hasMine;
 	}
-
 }

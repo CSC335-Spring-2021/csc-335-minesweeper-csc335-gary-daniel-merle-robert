@@ -25,4 +25,19 @@ public class MinesweeperController {
 		System.out.println("  ---------------------------------");
 		System.out.println("    a   b   c   d   e   f   g   h");
 	}
+	
+	public boolean isGameOver() {
+		//TODO: Implement
+		return true;
+	}
+	
+	public void makeMove(int row, int col, String input) {
+		//TODO: Implement
+		if(input.equals("p")) {
+			System.out.println("Primary Mouse Click");
+		}
+		else if(input.equals("s")) {
+			System.out.println("Right Mouse Click");
+		}
+	}
 }
