@@ -1,5 +1,9 @@
 package model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 /**
  * A class representing a board containing tiles for minesweeper. Supports
  * various sizes and custom shapes.
@@ -10,15 +14,56 @@ public class MinesweeperBoard {
 	private int size;
 
 	/**
-	 * Constructs a board given a length and a height.
+	 * Constructs a board given a size.
 	 * 
-	 * @param length
-	 * @param height
+	 * @param size The size (length and height) of the board.
 	 */
 	public MinesweeperBoard(int size) {
 		this.size = size;
 		this.board = new Tile[size][size];
 		fillBoard();
+	}
+
+	/**
+	 * Loads a shape into the board given a file containing "o" indicating in bounds
+	 * tiles and "_" indicating out of bound tiles.
+	 * 
+	 * Custom shapes can be given to board via the "inBounds" field of Tile objects,
+	 * which indicate whether a Tile is considered part of the board (i.e. clickable
+	 * and could contain a mine). This method loads in a custom shape via a file
+	 * that contains an "o" or "_" for every Tile within the grid, indicating in
+	 * bounds or out of bounds respectively.
+	 * 
+	 * The contents of the file must match the dimensions of the board. Does nothing
+	 * if the file does not exist.
+	 * 
+	 * @param fn The filename to a shape file
+	 */
+	public void loadShapeFromFile(String fn) {
+		try {
+			Scanner scanner = new Scanner(new File(fn));
+			int r = 0;
+			while (scanner.hasNext()) {
+				String line = scanner.nextLine();
+				String[] row = line.split(" ");
+				if (row.length != size) {
+					break;
+				}
+				for (int c = 0; c < size; c++) {
+					if (row[c].equals("o")) {
+						board[r][c].inBounds = true;
+					} else if (row[c].equals("_")) {
+						board[r][c].inBounds = false;
+					} else {
+						break;
+					}
+				}
+				r++;
+			}
+
+		} catch (FileNotFoundException e) {
+
+		}
 	}
 
 	/**
