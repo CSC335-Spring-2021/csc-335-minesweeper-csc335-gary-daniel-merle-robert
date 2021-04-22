@@ -1,11 +1,16 @@
 package view;
 
-import javafx.application.*;
-import javafx.collections.ObservableList;
+import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import controller.MinesweeperController;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -35,19 +40,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Leaderboard;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.io.FileNotFoundException;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
 import model.Tile;
-import java.text.DecimalFormat;
 
 @SuppressWarnings("deprecation")
 public class MinesweeperView extends Application implements Observer {
-	
+
 	private MinesweeperModel model;
-	private MinesweeperController controller;	
+	private MinesweeperController controller;
 	private final int SIZE_OF_BOARD = 13;
 	private StackPane[][] gameTiles;
 	private Text timeDisplay;
@@ -59,7 +60,7 @@ public class MinesweeperView extends Application implements Observer {
 		public void run() {
 			time += 0.01;
 			DecimalFormat f = new DecimalFormat("#0.00");
-			//Needed to prevent user interface from freezing
+			// Needed to prevent user interface from freezing
 			Platform.runLater(() -> {
 				timeDisplay.setText("TIME: " + f.format(time));
 			});
@@ -76,99 +77,60 @@ public class MinesweeperView extends Application implements Observer {
 				ObservableList<Node> list = gameTile.getChildren();
 				for (Node node : list) {
 					if (node instanceof Rectangle) {
-						//Condition 1: Covered + flagged
-						if(tile.isCovered && tile.isFlagged) {
+						// Condition 1: Covered + flagged
+						if (tile.isCovered && tile.isFlagged) {
 							Image img = new Image("file:images/flagged_tile.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
+							((Rectangle) node).setFill(new ImagePattern(img));
 						}
-						//Condition 2: Covered + no flag
-						else if(tile.isCovered && !tile.isFlagged) {
+						// Condition 2: Covered + no flag
+						else if (tile.isCovered && !tile.isFlagged) {
 							Image img = new Image("file:images/covered_tile.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
+							((Rectangle) node).setFill(new ImagePattern(img));
 						}
-						//Condition 3: Uncovered + has mine
-						else if(!tile.isCovered && tile.hasMine) {
+						// Condition 3: Uncovered + has mine
+						else if (!tile.isCovered && tile.hasMine) {
 							Image img = new Image("file:images/bombUncovered.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
+							((Rectangle) node).setFill(new ImagePattern(img));
 						}
-						//Condition 4: Uncovered + no mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(0)) {
-							Image img = new Image("file:images/0.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
+						// Condition 4: Uncovered + mines nearby
+						else if (!tile.isCovered && !tile.hasMine) {
+							Image img = new Image("file:images/" + Integer.toString(tile.displayNum) + ".png");
+							((Rectangle) node).setFill(new ImagePattern(img));
 						}
-						//Condition 5: Uncovered + 1 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(1)) {
-							Image img = new Image("file:images/1.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
-						//Condition 6: Uncovered + 2 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(2)) {
-							Image img = new Image("file:images/2.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
-						//Condition 7: Uncovered + 3 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(3)) {
-							Image img = new Image("file:images/3.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
-						//Condition 8: Uncovered + 4 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(4)) {
-							Image img = new Image("file:images/4.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
-						//Condition 9: Uncovered + 5 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(5)) {
-							Image img = new Image("file:images/5.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
-						//Condition 10: Uncovered + 6 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(6)) {
-							Image img = new Image("file:images/6.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
-						//Condition 11: Uncovered + 7 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(7)) {
-							Image img = new Image("file:images/7.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
-						//Condition 12: Uncovered + 8 mine nearby
-						else if(!tile.isCovered && !tile.hasMine && tile.displayNum.equals(8)) {
-							Image img = new Image("file:images/8.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
-						}
+						// Condition 5: Tile out of bounds
 						else {
 							Image img = new Image("file:images/blackTile.png");
-							((Rectangle)node).setFill(new ImagePattern(img));
+							((Rectangle) node).setFill(new ImagePattern(img));
 						}
 					}
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public void start(Stage stage) throws Exception {
 		this.model = new MinesweeperModel();
 		this.controller = new MinesweeperController(model);
-		//TODO: Get rid of comments when model is done
-		//model.addObserver(this);
-		//model.notifies();
+		// TODO: Get rid of comments when model is done
+		// model.addObserver(this);
+		// model.notifies();
 		AnchorPane mainMenu = createGameMenu(stage);
-		Scene scene = new Scene(mainMenu,600,600);
-		
+		Scene scene = new Scene(mainMenu, 600, 600);
+
 		stage.setTitle("Minesweeper");
 		stage.setScene(scene);
 		stage.show();
 	}
-	
+
 	private AnchorPane createGameMenu(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
-		
+
 		Image menuImage = new Image("file:images/dababy.jpg");
 		ImageView imageView = new ImageView();
 		imageView.setImage(menuImage);
 		anchorPane.getChildren().add(imageView);
-		
+
 		Button newGameButton = new Button("New Game");
 		newGameButton.setLayoutX(161.0);
 		newGameButton.setLayoutY(300.0);
@@ -177,19 +139,19 @@ public class MinesweeperView extends Application implements Observer {
 		newGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(newGameButton);
 		newGameButton.setOnAction(new NewGame(stage));
-		
-		Text title = new Text("Minesweeper"); 
+
+		Text title = new Text("Minesweeper");
 		title.setLayoutX(62.0);
 		title.setLayoutY(66.0);
 		title.setFont(new Font(81.0));
 		anchorPane.getChildren().add(title);
-		
+
 		return anchorPane;
 	}
 
 	private Scene launchNewGame(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
-		Scene gameScene = new Scene(anchorPane,619,694);
+		Scene gameScene = new Scene(anchorPane, 619, 694);
 		VBox layout = new VBox();
 		// Create timer and new game button at top
 		HBox topBar = new HBox();
@@ -201,31 +163,31 @@ public class MinesweeperView extends Application implements Observer {
 		timeDisplay = new Text("TIME: 0.00");
 		timeDisplay.setFont(new Font(18.0));
 		topBar.getChildren().add(timeDisplay);
-    
+
 		// Create New Game Button
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
 		resetButton.setPrefWidth(119.0);
-		//A task can only be set once otherwise an exception will be thrown
-		if(startOfGame) {
-			//Every 10 milliseconds the run function for task is called
+		// A task can only be set once otherwise an exception will be thrown
+		if (startOfGame) {
+			// Every 10 milliseconds the run function for task is called
 			timer.scheduleAtFixedRate(task, 10, 10);
 			startOfGame = false;
 		}
 		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
-		topBar.setPadding(new Insets(25.0,25.0,25.0,25.0));
-    
+		topBar.setPadding(new Insets(25.0, 25.0, 25.0, 25.0));
+
 		// Create Grid
 		gameTiles = createGameTiles();
 		GridPane board = createGameBoard(gameTiles);
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
-		
+
 		return gameScene;
 	}
-  
+
 	public Scene leaderboardMenu() throws FileNotFoundException {
 		AnchorPane pane = new AnchorPane();
 		Leaderboard leaderboard = new Leaderboard();
@@ -240,7 +202,7 @@ public class MinesweeperView extends Application implements Observer {
 		list.setLayoutY(81.0);
 		list.prefHeight(500.0);
 		list.prefWidth(350.0);
-		for(int i =1;i<=10;i++) {
+		for (int i = 1; i <= 10; i++) {
 			// Create HBox for each person rank/name/score
 			HBox player = new HBox();
 			player.prefHeight(50.0);
@@ -256,14 +218,14 @@ public class MinesweeperView extends Application implements Observer {
 			player.getChildren().add(name);
 			player.getChildren().add(score);
 			list.getChildren().add(player);
-			
+
 		}
 		pane.getChildren().add(leaderboardText);
 		pane.getChildren().add(list);
-		Scene leaderboardScene = new Scene(pane,600,600);
+		Scene leaderboardScene = new Scene(pane, 600, 600);
 		return leaderboardScene;
 	}
-	
+
 	private GridPane createGameBoard(StackPane[][] gameTiles) {
 		// Create gridpane and set background and insets
 		GridPane gameBoard = new GridPane();
@@ -278,7 +240,7 @@ public class MinesweeperView extends Application implements Observer {
 		}
 		return gameBoard;
 	}
-	
+
 	private StackPane[][] createGameTiles() {
 		StackPane[][] stackPanes = new StackPane[13][13];
 		for (int r = 0; r < SIZE_OF_BOARD; r++) {
@@ -288,30 +250,31 @@ public class MinesweeperView extends Application implements Observer {
 				square.setFill(new ImagePattern(img));
 				// Create stack pane and set padding and background
 				StackPane tile = new StackPane(square);
-				tile.setBorder(new Border(new BorderStroke(Color.rgb(123, 123, 123), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-				tile.setOnMouseClicked(new TileClicked(r,c));
+				tile.setBorder(new Border(new BorderStroke(Color.rgb(123, 123, 123), BorderStrokeStyle.SOLID,
+						CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+				tile.setOnMouseClicked(new TileClicked(r, c));
 				// Set mouse click handler, add to list
 				stackPanes[r][c] = tile;
 			}
 		}
 		return stackPanes;
 	}
-	
-	private class NewGame implements EventHandler<ActionEvent> {	
+
+	private class NewGame implements EventHandler<ActionEvent> {
 		private Stage stage;
-		
+
 		public NewGame(Stage stage) {
 			this.stage = stage;
 		}
-		
+
 		@Override
 		public void handle(ActionEvent event) {
-			//Resets time back to 0 if new game is called
+			// Resets time back to 0 if new game is called
 			stage.setScene(launchNewGame(stage));
 			time = 0;
 		}
 	}
-	
+
 	private class TileClicked implements EventHandler<MouseEvent> {
 		private int row;
 		private int col;
@@ -330,13 +293,11 @@ public class MinesweeperView extends Application implements Observer {
 
 		@Override
 		public void handle(MouseEvent event) {
-			if (event.getButton() == MouseButton.PRIMARY)
-            {
+			if (event.getButton() == MouseButton.PRIMARY) {
 				controller.makeMove(row, col, "p");
-            } else if (event.getButton() == MouseButton.SECONDARY)
-            {
-            	controller.makeMove(row, col, "s");
-            }
+			} else if (event.getButton() == MouseButton.SECONDARY) {
+				controller.makeMove(row, col, "s");
+			}
 		}
 	}
 }
