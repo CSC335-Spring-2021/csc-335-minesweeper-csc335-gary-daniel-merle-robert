@@ -1,8 +1,8 @@
 package view;
 
 import javafx.application.*;
+import java.util.ArrayList;
 import javafx.collections.ObservableList;
-
 import java.util.Observable;
 import java.util.Observer;
 
@@ -35,22 +35,22 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.Leaderboard;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.io.FileNotFoundException;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
 import model.Tile;
-
-import java.util.Timer;
-import java.util.TimerTask;
 import java.text.DecimalFormat;
 
 @SuppressWarnings("deprecation")
 public class MinesweeperView extends Application implements Observer {
 	
 	private MinesweeperModel model;
-	private MinesweeperController controller;
-
+	private MinesweeperController controller;	
+	private final int SIZE_OF_BOARD = 13;
 	private StackPane[][] gameTiles;
-	
 	private Text timeDisplay;
 	private static Timer timer = new Timer();
 	private static boolean startOfGame = true;
@@ -66,7 +66,7 @@ public class MinesweeperView extends Application implements Observer {
 			});
 		}
 	};
-	
+
 	@Override
 	public void update(Observable o, Object arg) {
 		MinesweeperBoard newBoard = (MinesweeperBoard) arg;
@@ -192,19 +192,17 @@ public class MinesweeperView extends Application implements Observer {
 		AnchorPane anchorPane = new AnchorPane();
 		Scene gameScene = new Scene(anchorPane,619,694);
 		VBox layout = new VBox();
-		
 		// Create timer and new game button at top
 		HBox topBar = new HBox();
 		topBar.setPrefHeight(70.0);
 		topBar.setPrefWidth(600.0);
 		topBar.setSpacing(400.0);
 		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
-		
 		// Create timer text
 		timeDisplay = new Text("TIME: 0.00");
 		timeDisplay.setFont(new Font(18.0));
 		topBar.getChildren().add(timeDisplay);
-		
+    
 		// Create New Game Button
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
@@ -218,7 +216,7 @@ public class MinesweeperView extends Application implements Observer {
 		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0,25.0,25.0,25.0));
-		
+    
 		// Create Grid
 		gameTiles = createGameTiles();
 		GridPane board = createGameBoard(gameTiles);
@@ -227,6 +225,44 @@ public class MinesweeperView extends Application implements Observer {
 		anchorPane.getChildren().add(layout);
 		
 		return gameScene;
+	}
+  
+	public Scene leaderboardMenu() throws FileNotFoundException {
+		AnchorPane pane = new AnchorPane();
+		Leaderboard leaderboard = new Leaderboard();
+		// Create title
+		Text leaderboardText = new Text("Leaderboard");
+		leaderboardText.setLayoutY(55.0);
+		leaderboardText.setFont(new Font(57.0));
+		leaderboardText.setWrappingWidth(600.0);
+		// Create VBox to store names and score
+		VBox list = new VBox();
+		list.setLayoutX(125.0);
+		list.setLayoutY(81.0);
+		list.prefHeight(500.0);
+		list.prefWidth(350.0);
+		for(int i =1;i<=10;i++) {
+			// Create HBox for each person rank/name/score
+			HBox player = new HBox();
+			player.prefHeight(50.0);
+			player.prefWidth(200.0);
+			player.setSpacing(100.0);
+			Text rank = new Text(String.valueOf(i) + ".");
+			rank.setFont(new Font(21.0));
+			Text name = new Text(leaderboard.getName(i));
+			name.setFont(new Font(21.0));
+			Text score = new Text(String.valueOf(leaderboard.getScore(i)));
+			score.setFont(new Font(21.0));
+			player.getChildren().add(rank);
+			player.getChildren().add(name);
+			player.getChildren().add(score);
+			list.getChildren().add(player);
+			
+		}
+		pane.getChildren().add(leaderboardText);
+		pane.getChildren().add(list);
+		Scene leaderboardScene = new Scene(pane,600,600);
+		return leaderboardScene;
 	}
 	
 	private GridPane createGameBoard(StackPane[][] gameTiles) {
@@ -246,9 +282,9 @@ public class MinesweeperView extends Application implements Observer {
 	
 	private StackPane[][] createGameTiles() {
 		StackPane[][] stackPanes = new StackPane[13][13];
-		for (int r = 0; r < 13; r++) {
-			for (int c = 0; c < 13; c++) {
-				Rectangle square = new Rectangle(44,44);
+		for (int r = 0; r < SIZE_OF_BOARD; r++) {
+			for (int c = 0; c < SIZE_OF_BOARD; c++) {
+				Rectangle square = new Rectangle(530/SIZE_OF_BOARD - 1, 530/SIZE_OF_BOARD - 1);
 				Image img = new Image("file:images/covered_tile.png");
 				square.setFill(new ImagePattern(img));
 				// Create stack pane and set padding and background
