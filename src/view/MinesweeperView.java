@@ -1,7 +1,6 @@
 package view;
 
 import javafx.application.*;
-import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import java.util.Observable;
 import java.util.Observer;
@@ -70,8 +69,8 @@ public class MinesweeperView extends Application implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		MinesweeperBoard newBoard = (MinesweeperBoard) arg;
-		for (int i = 0; i < 13; i++) {
-			for (int j = 0; j < 13; j++) {
+		for (int i = 0; i < SIZE_OF_BOARD; i++) {
+			for (int j = 0; j < SIZE_OF_BOARD; j++) {
 				StackPane gameTile = gameTiles[i][j];
 				Tile tile = newBoard.getTile(i, j);
 				ObservableList<Node> list = gameTile.getChildren();
@@ -284,7 +283,7 @@ public class MinesweeperView extends Application implements Observer {
 		StackPane[][] stackPanes = new StackPane[13][13];
 		for (int r = 0; r < SIZE_OF_BOARD; r++) {
 			for (int c = 0; c < SIZE_OF_BOARD; c++) {
-				Rectangle square = new Rectangle(530/SIZE_OF_BOARD - 1, 530/SIZE_OF_BOARD - 1);
+				Rectangle square = new Rectangle(44, 44);
 				Image img = new Image("file:images/covered_tile.png");
 				square.setFill(new ImagePattern(img));
 				// Create stack pane and set padding and background
