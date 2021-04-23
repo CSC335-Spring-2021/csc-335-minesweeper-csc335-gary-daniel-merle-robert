@@ -4,8 +4,6 @@ import java.util.Observable;
 import java.util.Random;
 
 public class MinesweeperModel extends Observable {
-	private final String BOMB = "x";
-	private final String EMPTY = " ";
 	private int bombCount = 20;
 	private MinesweeperBoard board;
 
@@ -97,6 +95,7 @@ public class MinesweeperModel extends Observable {
 		if (x < 0 || y < 0 || x >= board.getSize() || y >= board.getSize()) {
 			return;
 		} else if (board.getTile(x, y).hasMine) {
+			board.reveal(x, y);
 			gameLost();
 		} else if (board.numMinesNearby(x, y) == 0 && board.getTile(x, y).isCovered) {
 			board.reveal(x, y);
@@ -131,6 +130,13 @@ public class MinesweeperModel extends Observable {
 	 */
 	public void gameLost() {
 		System.out.println("You lose");
+		for (int i = 0; i < 13; i++) {
+			for (int j = 0; j < 13; j++) {
+				if (board.getTile(i, j).isCovered && board.getTile(i, j).hasMine) {
+					board.reveal(i, j);
+				}
+			}
+		}
 	}
 	
 	/**
