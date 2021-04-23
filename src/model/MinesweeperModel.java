@@ -89,6 +89,9 @@ public class MinesweeperModel extends Observable {
 		if (!board.getTile(x, y).inBounds) {
 			return;
 		}
+		if(board.getTile(x, y).isFlagged) {
+			return;
+		}
 		// If mine is revealed, throw GameLostException
 		else if (board.getTile(x, y).hasMine) {
 			board.reveal(x, y);
@@ -128,7 +131,12 @@ public class MinesweeperModel extends Observable {
 	 * @param col A column coordinate.
 	 */
 	public void flagSpace(int row, int col) {
-		board.getTile(row, col).isFlagged = true;
+		if(board.getTile(row, col).isFlagged) {
+			board.getTile(row, col).isFlagged = false;
+		}
+		else {
+			board.getTile(row, col).isFlagged = true;
+		}
 		notifyView();
 	}
 
