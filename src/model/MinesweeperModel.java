@@ -39,7 +39,7 @@ public class MinesweeperModel extends Observable {
 				continue;
 			}
 			board.setMine(x, y, true);
-			System.out.println(x + " " + y);
+			//System.out.println(x + " " + y);
 			bombCount -= 1;
 		}
 	}
@@ -68,7 +68,7 @@ public class MinesweeperModel extends Observable {
 	public void revealSpace(int x, int y) throws GameLostException {
 		// If first move and mine is revealed, moves it to a different spot
 		if (firstMove) {
-			System.out.println("First move");
+			//System.out.println("First move");
 			firstMove = false;
 			if (board.getTile(x, y).hasMine) {
 				setBombs(1);

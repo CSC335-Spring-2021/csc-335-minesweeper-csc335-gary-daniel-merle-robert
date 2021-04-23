@@ -111,11 +111,6 @@ public class MinesweeperView extends Application implements Observer {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		this.model = new MinesweeperModel();
-		this.controller = new MinesweeperController(model);
-		// TODO: Get rid of comments when model is done
-		// model.addObserver(this);
-		// model.notifies();
 		AnchorPane mainMenu = createGameMenu(stage);
 		Scene scene = new Scene(mainMenu, 600, 600);
 		stage.setTitle("Minesweeper");
@@ -184,7 +179,12 @@ public class MinesweeperView extends Application implements Observer {
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
-
+		
+		this.model = new MinesweeperModel();
+		this.controller = new MinesweeperController(model);
+		model.addObserver(this);
+		model.notifyView();
+		
 		return gameScene;
 	}
 
@@ -298,7 +298,7 @@ public class MinesweeperView extends Application implements Observer {
 					controller.revealSpace(row, col);
 				} catch (GameLostException e) {
 					// GARY: handle this and make it 4d
-
+					System.out.println("GameOver");
 				}
 			} else if (event.getButton() == MouseButton.SECONDARY) {
 				controller.flagSpace(row, col);

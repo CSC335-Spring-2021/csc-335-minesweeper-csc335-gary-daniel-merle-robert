@@ -64,7 +64,6 @@ public class MinesweeperController {
 	 */
 	public void revealSpace(int row, int col) throws GameLostException {
 		model.revealSpace(row, col);
-		printBoard();
 	}
 
 	/**
@@ -74,7 +73,6 @@ public class MinesweeperController {
 	 */
 	public void flagSpace(int row, int col) {
 		model.flagSpace(row, col);
-		printBoard();
 	}
 
 	/**
