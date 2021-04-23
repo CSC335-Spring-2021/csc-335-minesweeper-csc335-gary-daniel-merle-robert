@@ -78,7 +78,8 @@ public class MinesweeperController {
 	}
 
 	/**
-	 * 
+	 * Reveals all mines in the board. This method is called when the user clicks a
+	 * mine.
 	 */
 	public void revealMines() {
 		model.revealMines();
