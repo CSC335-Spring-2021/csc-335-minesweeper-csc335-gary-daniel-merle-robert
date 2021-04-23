@@ -49,8 +49,9 @@ public class MinesweeperController {
 		int tiles = 0;
 		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 13; j++) {
-				if (board.getTile(i, j).isCovered)
+				if (board.getTile(i, j).isCovered) {
 					tiles += 1;
+				}
 			}
 		}
 		return tiles == model.getMineCount();

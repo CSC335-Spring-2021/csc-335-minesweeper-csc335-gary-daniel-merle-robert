@@ -16,7 +16,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -296,9 +298,14 @@ public class MinesweeperView extends Application implements Observer {
 			if (event.getButton() == MouseButton.PRIMARY) {
 				try {
 					controller.revealSpace(row, col);
+					if(controller.isGameOver()) {
+						Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
+						alert.showAndWait();
+					}
 				} catch (GameLostException e) {
-					// GARY: handle this and make it 4d
-					System.out.println("GameOver");
+					controller.revealMines();
+					Alert alert = new Alert(AlertType.INFORMATION, "You Lost!");
+					alert.showAndWait();
 				}
 			} else if (event.getButton() == MouseButton.SECONDARY) {
 				controller.flagSpace(row, col);
