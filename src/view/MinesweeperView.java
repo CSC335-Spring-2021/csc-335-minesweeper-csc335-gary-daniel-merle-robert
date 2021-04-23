@@ -39,6 +39,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.GameLostException;
 import model.Leaderboard;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
@@ -293,9 +294,14 @@ public class MinesweeperView extends Application implements Observer {
 		@Override
 		public void handle(MouseEvent event) {
 			if (event.getButton() == MouseButton.PRIMARY) {
-				controller.makeMove(row, col, "p");
+				try {
+					controller.revealSpace(row, col);
+				} catch (GameLostException e) {
+					// GARY: handle this and make it 4d
+
+				}
 			} else if (event.getButton() == MouseButton.SECONDARY) {
-				controller.makeMove(row, col, "s");
+				controller.flagSpace(row, col);
 			}
 		}
 	}
