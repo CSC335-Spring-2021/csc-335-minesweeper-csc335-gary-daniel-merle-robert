@@ -117,7 +117,6 @@ public class MinesweeperView extends Application implements Observer {
 		// model.notifies();
 		AnchorPane mainMenu = createGameMenu(stage);
 		Scene scene = new Scene(mainMenu, 600, 600);
-
 		stage.setTitle("Minesweeper");
 		stage.setScene(scene);
 		stage.show();
