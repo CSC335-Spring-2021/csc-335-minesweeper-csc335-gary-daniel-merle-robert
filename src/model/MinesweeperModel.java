@@ -4,7 +4,6 @@ import java.util.Observable;
 import java.util.Random;
 
 public class MinesweeperModel extends Observable {
-	private int bombCount = 20;
 	private MinesweeperBoard board;
 	private boolean firstMove;
 
@@ -15,8 +14,7 @@ public class MinesweeperModel extends Observable {
 	public MinesweeperModel() {
 		board = new MinesweeperBoard(13);
 		firstMove = true;
-		this.bombCount = 20;
-		setBombs(this.bombCount);
+		setBombs(board.bombCount);
 	}
 
 	/**
@@ -31,8 +29,7 @@ public class MinesweeperModel extends Observable {
 		board = new MinesweeperBoard(13);
 		board.loadShapeFromFile("shapes/" + shape + ".txt");
 		firstMove = true;
-		this.bombCount = 20;
-		setBombs(this.bombCount);
+		setBombs(board.bombCount);
 	}
 
 	/**
@@ -40,7 +37,7 @@ public class MinesweeperModel extends Observable {
 	 * correct number of bombs are placed and that they are all at different
 	 * locations.
 	 * 
-	 * @param bombCount
+	 * @param bombCount The number of bombs to place
 	 */
 	public void setBombs(int bombCount) {
 		Random rand = new Random();
@@ -175,7 +172,7 @@ public class MinesweeperModel extends Observable {
 	 * @return bombCount Total number of mines.
 	 */
 	public int getMineCount() {
-		return this.bombCount;
+		return board.bombCount;
 	}
 
 }

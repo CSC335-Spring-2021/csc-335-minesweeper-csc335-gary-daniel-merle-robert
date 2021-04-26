@@ -12,6 +12,7 @@ public class MinesweeperBoard {
 
 	private Tile[][] board;
 	private int size;
+	public int bombCount;
 
 	/**
 	 * Constructs a board given a size.
@@ -21,12 +22,14 @@ public class MinesweeperBoard {
 	public MinesweeperBoard(int size) {
 		this.size = size;
 		this.board = new Tile[size][size];
+		this.bombCount = 20;
 		fillBoard();
 	}
 
 	/**
 	 * Loads a shape into the board given a file containing "o" indicating in bounds
-	 * tiles and "_" indicating out of bound tiles.
+	 * tiles and "_" indicating out of bound tiles, with the first line indicating
+	 * how many bombs to have.
 	 * 
 	 * Custom shapes can be given to board via the "inBounds" field of Tile objects,
 	 * which indicate whether a Tile is considered part of the board (i.e. clickable
@@ -43,8 +46,12 @@ public class MinesweeperBoard {
 		try {
 			Scanner scanner = new Scanner(new File(fn));
 			int r = 0;
+			// First line: number of bombs
+			String line = scanner.nextLine();
+			this.bombCount = Integer.parseInt(line);
+			// Rest: board
 			while (scanner.hasNext()) {
-				String line = scanner.nextLine();
+				line = scanner.nextLine();
 				String[] row = line.split(" ");
 				if (row.length != size) {
 					break;
