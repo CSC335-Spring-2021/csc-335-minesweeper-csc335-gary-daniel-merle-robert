@@ -136,6 +136,23 @@ public class MinesweeperView extends Application implements Observer {
 		newGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(newGameButton);
 		newGameButton.setOnAction(new NewGame(stage));
+		
+		Button leaderboardButton = new Button("Leaderboard");
+		leaderboardButton.setLayoutX(161.0);
+		leaderboardButton.setLayoutY(357.0);
+		leaderboardButton.setOpacity(0.69);
+		leaderboardButton.setPrefHeight(41.0);
+		leaderboardButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(leaderboardButton);
+		leaderboardButton.setOnAction(new loadLeaderboard(stage));
+		
+		Button loadGameButton = new Button("Load Game");
+		loadGameButton.setLayoutX(161.0);
+		loadGameButton.setLayoutY(416.0);
+		loadGameButton.setOpacity(0.69);
+		loadGameButton.setPrefHeight(41.0);
+		loadGameButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(loadGameButton);
 
 		Text title = new Text("Minesweeper");
 		title.setLayoutX(62.0);
@@ -190,7 +207,7 @@ public class MinesweeperView extends Application implements Observer {
 		return gameScene;
 	}
 
-	public Scene leaderboardMenu() throws FileNotFoundException {
+	public Scene leaderboardMenu(Stage stage) throws FileNotFoundException {
 		AnchorPane pane = new AnchorPane();
 		Leaderboard leaderboard = new Leaderboard();
 		// Create title
@@ -276,6 +293,25 @@ public class MinesweeperView extends Application implements Observer {
 			time = 0;
 		}
 	}
+	
+	private class loadLeaderboard implements EventHandler<ActionEvent> {
+		private Stage stage;
+		
+		public loadLeaderboard(Stage stage) {
+			this.stage = stage;
+		}
+
+		@Override
+		public void handle(ActionEvent arg0) {
+			try {
+				stage.setScene(leaderboardMenu(stage));
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
 
 	private class TileClicked implements EventHandler<MouseEvent> {
 		private int row;
@@ -312,4 +348,5 @@ public class MinesweeperView extends Application implements Observer {
 			}
 		}
 	}
+
 }
