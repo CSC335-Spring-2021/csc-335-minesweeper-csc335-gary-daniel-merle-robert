@@ -26,7 +26,7 @@ public class Tile {
 		isCovered = true;
 		isFlagged = false;
 		hasMine = false;
-		displayNum = null;
+		displayNum = 0;
 	}
 
 	/**
@@ -36,5 +36,6 @@ public class Tile {
 	 */
 	public void setHasMine(boolean hasMine) {
 		this.hasMine = hasMine;
+		displayNum = -1;
 	}
 }
