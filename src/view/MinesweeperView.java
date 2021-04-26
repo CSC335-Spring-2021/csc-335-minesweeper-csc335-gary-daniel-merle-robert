@@ -19,6 +19,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -58,6 +60,7 @@ public class MinesweeperView extends Application implements Observer {
 	private static Timer timer = new Timer();
 	private static boolean startOfGame = true;
 	private double time = 0;
+	private String playerName = "";
 	private TimerTask task = new TimerTask() {
 		@Override
 		public void run() {
@@ -87,7 +90,7 @@ public class MinesweeperView extends Application implements Observer {
 						}
 						// Condition 1: Covered + flagged
 						else if (tile.isCovered && tile.isFlagged) {
-							Image img = new Image("file:images/flagged_tile.png");
+							Image img = new Image("file:images/flagged_tile-2.png");
 							((Rectangle) node).setFill(new ImagePattern(img));
 						}
 						// Condition 2: Covered + no flag
@@ -97,7 +100,7 @@ public class MinesweeperView extends Application implements Observer {
 						}
 						// Condition 3: Uncovered + has mine
 						else if (!tile.isCovered && tile.hasMine) {
-							Image img = new Image("file:images/bombUncovered.png");
+							Image img = new Image("file:images/bombUncovered-2.png");
 							((Rectangle) node).setFill(new ImagePattern(img));
 						}
 						// Condition 4: Uncovered + mines nearby
@@ -207,7 +210,7 @@ public class MinesweeperView extends Application implements Observer {
 		return gameScene;
 	}
 
-	public Scene leaderboardMenu(Stage stage) throws FileNotFoundException {
+	private Scene leaderboardMenu(Stage stage) throws FileNotFoundException {
 		AnchorPane pane = new AnchorPane();
 		Leaderboard leaderboard = new Leaderboard();
 		// Create title
@@ -244,6 +247,45 @@ public class MinesweeperView extends Application implements Observer {
 		Scene leaderboardScene = new Scene(pane, 600, 600);
 		return leaderboardScene;
 	}
+	
+	private Scene gamemodeMenu(Stage stage) {
+		AnchorPane anchorPane = new AnchorPane();
+		// Create title
+		Text leaderboardText = new Text("Gamemode");
+		leaderboardText.setLayoutY(55.0);
+		leaderboardText.setFont(new Font(57.0));
+		leaderboardText.setWrappingWidth(600.0);
+		
+		Button regularButton = new Button("Regular");
+		regularButton.setLayoutX(161.0);
+		regularButton.setLayoutY(300.0);
+		regularButton.setOpacity(0.69);
+		regularButton.setPrefHeight(41.0);
+		regularButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(regularButton);
+		regularButton.setOnAction(new NewGame(stage));
+		
+		Button triangleButton = new Button("Triangle");
+		triangleButton.setLayoutX(161.0);
+		triangleButton.setLayoutY(357.0);
+		triangleButton.setOpacity(0.69);
+		triangleButton.setPrefHeight(41.0);
+		triangleButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(triangleButton);
+		triangleButton.setOnAction(new loadLeaderboard(stage));
+		
+		Button donutButton = new Button("Donut");
+		donutButton.setLayoutX(161.0);
+		donutButton.setLayoutY(416.0);
+		donutButton.setOpacity(0.69);
+		donutButton.setPrefHeight(41.0);
+		donutButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(donutButton);
+		
+		Scene gamemodeScene = new Scene(anchorPane, 600, 600);
+		return gamemodeScene;
+	}
+	
 
 	private GridPane createGameBoard(StackPane[][] gameTiles) {
 		// Create gridpane and set background and insets
@@ -285,10 +327,15 @@ public class MinesweeperView extends Application implements Observer {
 		public NewGame(Stage stage) {
 			this.stage = stage;
 		}
-
 		@Override
 		public void handle(ActionEvent event) {
 			// Resets time back to 0 if new game is called
+			TextInputDialog getName = new TextInputDialog();
+			getName.setHeaderText("Enter your name");
+			// show the text input dialog
+        	getName.showAndWait();
+            // set the text of the label
+            playerName = getName.getEditor().getText();
 			stage.setScene(launchNewGame(stage));
 			time = 0;
 		}
@@ -348,5 +395,7 @@ public class MinesweeperView extends Application implements Observer {
 			}
 		}
 	}
+	
+	
 
 }
