@@ -20,6 +20,22 @@ public class MinesweeperModel extends Observable {
 	}
 
 	/**
+	 * Constructs the Minesweeper model given a custom shape. The shape must refer
+	 * to the name of a text file (excluding ".txt") in the ./shapes/ folder. See
+	 * MinesweeperBoard.loadShapeFromFile() for more details.
+	 * 
+	 * @param shape A string referring to a file containing a custom shape for the
+	 *              board.
+	 */
+	public MinesweeperModel(String shape) {
+		board = new MinesweeperBoard(13);
+		board.loadShapeFromFile("shapes/" + shape + ".txt");
+		firstMove = true;
+		this.bombCount = 20;
+		setBombs(this.bombCount);
+	}
+
+	/**
 	 * Sets the bombs to random spots on the board. Uses logic to ensure that the
 	 * correct number of bombs are placed and that they are all at different
 	 * locations.
@@ -39,7 +55,7 @@ public class MinesweeperModel extends Observable {
 				continue;
 			}
 			board.setMine(x, y, true);
-			//System.out.println(x + " " + y);
+			// System.out.println(x + " " + y);
 			bombCount -= 1;
 		}
 	}
@@ -68,7 +84,7 @@ public class MinesweeperModel extends Observable {
 	public void revealSpace(int x, int y) throws GameLostException {
 		// If first move and mine is revealed, moves it to a different spot
 		if (firstMove) {
-			//System.out.println("First move");
+			// System.out.println("First move");
 			firstMove = false;
 			if (board.getTile(x, y).hasMine) {
 				setBombs(1);
@@ -89,7 +105,7 @@ public class MinesweeperModel extends Observable {
 		if (!board.getTile(x, y).inBounds) {
 			return;
 		}
-		if(board.getTile(x, y).isFlagged) {
+		if (board.getTile(x, y).isFlagged) {
 			return;
 		}
 		// If mine is revealed, throw GameLostException
@@ -101,7 +117,6 @@ public class MinesweeperModel extends Observable {
 		// Otherwise, recursively dig out neighbors
 		else if (board.numMinesNearby(x, y) == 0 && board.getTile(x, y).isCovered) {
 			board.reveal(x, y);
-			notifyView();
 			revealSpace(x + 1, y);
 			revealSpace(x - 1, y);
 			revealSpace(x, y + 1);
@@ -112,8 +127,8 @@ public class MinesweeperModel extends Observable {
 			revealSpace(x - 1, y - 1);
 		} else {
 			board.reveal(x, y);
-			notifyView();
 		}
+		notifyView();
 	}
 
 	/**
@@ -131,10 +146,9 @@ public class MinesweeperModel extends Observable {
 	 * @param col A column coordinate.
 	 */
 	public void flagSpace(int row, int col) {
-		if(board.getTile(row, col).isFlagged) {
+		if (board.getTile(row, col).isFlagged) {
 			board.getTile(row, col).isFlagged = false;
-		}
-		else {
+		} else {
 			board.getTile(row, col).isFlagged = true;
 		}
 		notifyView();
@@ -161,7 +175,7 @@ public class MinesweeperModel extends Observable {
 	 * @return bombCount Total number of mines.
 	 */
 	public int getMineCount() {
-		return bombCount;
+		return this.bombCount;
 	}
 
 }
