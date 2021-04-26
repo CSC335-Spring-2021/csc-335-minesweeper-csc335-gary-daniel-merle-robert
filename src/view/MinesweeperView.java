@@ -16,7 +16,9 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -39,6 +41,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.GameLostException;
 import model.Leaderboard;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
@@ -110,14 +113,8 @@ public class MinesweeperView extends Application implements Observer {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		this.model = new MinesweeperModel();
-		this.controller = new MinesweeperController(model);
-		// TODO: Get rid of comments when model is done
-		// model.addObserver(this);
-		// model.notifies();
 		AnchorPane mainMenu = createGameMenu(stage);
 		Scene scene = new Scene(mainMenu, 600, 600);
-
 		stage.setTitle("Minesweeper");
 		stage.setScene(scene);
 		stage.show();
@@ -184,7 +181,12 @@ public class MinesweeperView extends Application implements Observer {
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
-
+		
+		this.model = new MinesweeperModel();
+		this.controller = new MinesweeperController(model);
+		model.addObserver(this);
+		model.notifyView();
+		
 		return gameScene;
 	}
 
@@ -294,9 +296,19 @@ public class MinesweeperView extends Application implements Observer {
 		@Override
 		public void handle(MouseEvent event) {
 			if (event.getButton() == MouseButton.PRIMARY) {
-				controller.makeMove(row, col, "p");
+				try {
+					controller.revealSpace(row, col);
+					if(controller.isGameOver()) {
+						Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
+						alert.showAndWait();
+					}
+				} catch (GameLostException e) {
+					controller.revealMines();
+					Alert alert = new Alert(AlertType.INFORMATION, "You Lost!");
+					alert.showAndWait();
+				}
 			} else if (event.getButton() == MouseButton.SECONDARY) {
-				controller.makeMove(row, col, "s");
+				controller.flagSpace(row, col);
 			}
 		}
 	}

@@ -76,6 +76,15 @@ public class MinesweeperBoard {
 	public Tile getTile(int r, int c) {
 		return board[r][c];
 	}
+	
+	/**
+	 * Returns the size of the board.
+	 * 
+	 * @return Size of board
+	 */
+	public int getSize() {
+		return size;
+	}
 
 	/**
 	 * Places or removes a mine at a given coordinate in the board.
