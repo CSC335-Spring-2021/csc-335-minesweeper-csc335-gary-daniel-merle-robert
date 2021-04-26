@@ -82,6 +82,19 @@ public class MinesweeperModel extends Observable {
 	 * @throws GameLostException If a mine is revealed
 	 */
 	public void revealSpace(int x, int y) throws GameLostException {
+		revealSpaceHelper(x, y);
+		notifyView();
+	}
+
+	/**
+	 * Private inner class that implements revealSpace without notifying observers
+	 * (runtime optimization).
+	 * 
+	 * @param x A row coordinate.
+	 * @param y A column coordinate.
+	 * @throws GameLostException If a mine is revealed
+	 */
+	public void revealSpaceHelper(int x, int y) throws GameLostException {
 		// If first move and mine is revealed, moves it to a different spot
 		if (firstMove) {
 			// System.out.println("First move");
@@ -111,24 +124,22 @@ public class MinesweeperModel extends Observable {
 		// If mine is revealed, throw GameLostException
 		else if (board.getTile(x, y).hasMine) {
 			board.reveal(x, y);
-			notifyView();
 			throw new GameLostException("Game lost");
 		}
 		// Otherwise, recursively dig out neighbors
 		else if (board.numMinesNearby(x, y) == 0 && board.getTile(x, y).isCovered) {
 			board.reveal(x, y);
-			revealSpace(x + 1, y);
-			revealSpace(x - 1, y);
-			revealSpace(x, y + 1);
-			revealSpace(x, y - 1);
-			revealSpace(x + 1, y + 1);
-			revealSpace(x - 1, y + 1);
-			revealSpace(x + 1, y - 1);
-			revealSpace(x - 1, y - 1);
+			revealSpaceHelper(x + 1, y);
+			revealSpaceHelper(x - 1, y);
+			revealSpaceHelper(x, y + 1);
+			revealSpaceHelper(x, y - 1);
+			revealSpaceHelper(x + 1, y + 1);
+			revealSpaceHelper(x - 1, y + 1);
+			revealSpaceHelper(x + 1, y - 1);
+			revealSpaceHelper(x - 1, y - 1);
 		} else {
 			board.reveal(x, y);
 		}
-		notifyView();
 	}
 
 	/**
@@ -156,17 +167,17 @@ public class MinesweeperModel extends Observable {
 
 	/**
 	 * Reveals all mines in the board. This method is called when the user clicks a
-	 * mine. TODO: Implement this method (not sure how we wanna do this)
+	 * mine.
 	 */
 	public void revealMines() {
 		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 13; j++) {
 				if (board.getTile(i, j).isCovered && board.getTile(i, j).hasMine) {
 					board.reveal(i, j);
-					notifyView();
 				}
 			}
 		}
+		notifyView();
 	}
 
 	/**
