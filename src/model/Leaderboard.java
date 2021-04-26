@@ -53,7 +53,7 @@ public class playerSorter implements Comparator<Player> {
 		return leaderboard.get(rank-1).getScore();
 	}
 	
-	public void addScore(String name, Integer score) {
+	public void addScore(String name, int score) {
 		Player newScore = new Player(name, score);
 		leaderboard.add(newScore);
 		leaderboard.sort(new playerSorter());
