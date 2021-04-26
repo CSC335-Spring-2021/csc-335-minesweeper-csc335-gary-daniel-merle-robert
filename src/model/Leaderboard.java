@@ -27,7 +27,7 @@ public class playerSorter implements Comparator<Player> {
 	@Override
 	public int compare(Player o1, Player o2) {
 		// TODO Auto-generated method stub
-		return o2.getScore().compareTo(o1.getScore());
+		return o1.getScore().compareTo(o2.getScore());
 	}
 	
 }
@@ -49,8 +49,15 @@ public class playerSorter implements Comparator<Player> {
 		return leaderboard.get(rank-1).getName();
 	}
 	
-	public int getScore(int rank) {
+	public Integer getScore(int rank) {
 		return leaderboard.get(rank-1).getScore();
+	}
+	
+	public void addScore(String name, Integer score) {
+		Player newScore = new Player(name, score);
+		leaderboard.add(newScore);
+		leaderboard.sort(new playerSorter());
+		leaderboard.remove(leaderboard.size()-1);
 	}
 	
 }
