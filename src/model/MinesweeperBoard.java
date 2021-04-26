@@ -60,9 +60,9 @@ public class MinesweeperBoard {
 				}
 				r++;
 			}
-
+			scanner.close();
 		} catch (FileNotFoundException e) {
-
+			e.printStackTrace();
 		}
 	}
 
@@ -76,7 +76,7 @@ public class MinesweeperBoard {
 	public Tile getTile(int r, int c) {
 		return board[r][c];
 	}
-	
+
 	/**
 	 * Returns the size of the board.
 	 * 

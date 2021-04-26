@@ -17,8 +17,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -80,8 +80,13 @@ public class MinesweeperView extends Application implements Observer {
 				ObservableList<Node> list = gameTile.getChildren();
 				for (Node node : list) {
 					if (node instanceof Rectangle) {
+						// Condition 0: Tile out of bounds
+						if (!tile.inBounds) {
+							Image img = new Image("file:images/blackTile.png");
+							((Rectangle) node).setFill(new ImagePattern(img));
+						}
 						// Condition 1: Covered + flagged
-						if (tile.isCovered && tile.isFlagged) {
+						else if (tile.isCovered && tile.isFlagged) {
 							Image img = new Image("file:images/flagged_tile.png");
 							((Rectangle) node).setFill(new ImagePattern(img));
 						}
@@ -98,11 +103,6 @@ public class MinesweeperView extends Application implements Observer {
 						// Condition 4: Uncovered + mines nearby
 						else if (!tile.isCovered && !tile.hasMine) {
 							Image img = new Image("file:images/" + Integer.toString(tile.displayNum) + ".png");
-							((Rectangle) node).setFill(new ImagePattern(img));
-						}
-						// Condition 5: Tile out of bounds
-						else {
-							Image img = new Image("file:images/blackTile.png");
 							((Rectangle) node).setFill(new ImagePattern(img));
 						}
 					}
@@ -181,12 +181,12 @@ public class MinesweeperView extends Application implements Observer {
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
-		
+
 		this.model = new MinesweeperModel();
 		this.controller = new MinesweeperController(model);
 		model.addObserver(this);
 		model.notifyView();
-		
+
 		return gameScene;
 	}
 
@@ -298,7 +298,7 @@ public class MinesweeperView extends Application implements Observer {
 			if (event.getButton() == MouseButton.PRIMARY) {
 				try {
 					controller.revealSpace(row, col);
-					if(controller.isGameOver()) {
+					if (controller.isGameOver()) {
 						Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
 						alert.showAndWait();
 					}
