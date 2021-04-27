@@ -1,7 +1,10 @@
 package model;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Scanner;
@@ -35,7 +38,7 @@ public class playerSorter implements Comparator<Player> {
 	private ArrayList<Player> leaderboard = new ArrayList<Player>();
 	
 	public Leaderboard() throws FileNotFoundException {
-		Scanner readFile = new Scanner(new File("leaderboard/leaderboard"));
+		Scanner readFile = new Scanner(new File("leaderboard/leaderboard.txt"));
 		while(readFile.hasNextLine()) {
 			String line = readFile.nextLine();
 			String [] lineArray = line.split(" ");
@@ -53,11 +56,19 @@ public class playerSorter implements Comparator<Player> {
 		return leaderboard.get(rank-1).getScore();
 	}
 	
-	public void addScore(String name, int score) {
+	public void addScore(String name, int score) throws IOException {
 		Player newScore = new Player(name, score);
 		leaderboard.add(newScore);
 		leaderboard.sort(new playerSorter());
 		leaderboard.remove(leaderboard.size()-1);
+		BufferedWriter writer = new BufferedWriter(new FileWriter(new File("leaderboard/leaderboard.txt"), false));
+		for(Player players:leaderboard) {
+			String line = players.getName() + " " + String.valueOf(players.getScore());
+			System.out.println(line);
+			writer.write(line);
+			writer.newLine();
+		}
+		writer.close();
 	}
 	
 }

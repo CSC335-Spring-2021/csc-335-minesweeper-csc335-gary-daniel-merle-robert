@@ -1,6 +1,7 @@
 package view;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
@@ -55,12 +56,13 @@ public class MinesweeperView extends Application implements Observer {
 	private MinesweeperModel model;
 	private MinesweeperController controller;
 	private final int SIZE_OF_BOARD = 13;
+	private String playerName = "";
+	private Leaderboard leaderboard;
 	private StackPane[][] gameTiles;
 	private Text timeDisplay;
 	private static Timer timer = new Timer();
 	private static boolean startOfGame = true;
 	private double time = 0;
-	private String playerName = "";
 	private TimerTask task = new TimerTask() {
 		@Override
 		public void run() {
@@ -126,15 +128,15 @@ public class MinesweeperView extends Application implements Observer {
 	private AnchorPane createGameMenu(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
 
-		Image menuImage = new Image("file:images/dababy.jpg");
+		Image menuImage = new Image("file:images/devilsweeper.png");
 		ImageView imageView = new ImageView();
 		imageView.setImage(menuImage);
 		anchorPane.getChildren().add(imageView);
 
 		Button newGameButton = new Button("New Game");
 		newGameButton.setLayoutX(161.0);
-		newGameButton.setLayoutY(300.0);
-		newGameButton.setOpacity(0.69);
+		newGameButton.setLayoutY(345.0);
+		newGameButton.setOpacity(0.00);
 		newGameButton.setPrefHeight(41.0);
 		newGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(newGameButton);
@@ -142,8 +144,8 @@ public class MinesweeperView extends Application implements Observer {
 		
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setLayoutX(161.0);
-		leaderboardButton.setLayoutY(357.0);
-		leaderboardButton.setOpacity(0.69);
+		leaderboardButton.setLayoutY(404.0);
+		leaderboardButton.setOpacity(0.00);
 		leaderboardButton.setPrefHeight(41.0);
 		leaderboardButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(leaderboardButton);
@@ -151,17 +153,11 @@ public class MinesweeperView extends Application implements Observer {
 		
 		Button loadGameButton = new Button("Load Game");
 		loadGameButton.setLayoutX(161.0);
-		loadGameButton.setLayoutY(416.0);
-		loadGameButton.setOpacity(0.69);
+		loadGameButton.setLayoutY(464.0);
+		loadGameButton.setOpacity(0.00);
 		loadGameButton.setPrefHeight(41.0);
 		loadGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(loadGameButton);
-
-		Text title = new Text("Minesweeper");
-		title.setLayoutX(62.0);
-		title.setLayoutY(66.0);
-		title.setFont(new Font(81.0));
-		anchorPane.getChildren().add(title);
 
 		return anchorPane;
 	}
@@ -211,40 +207,48 @@ public class MinesweeperView extends Application implements Observer {
 	}
 
 	private Scene leaderboardMenu(Stage stage) throws FileNotFoundException {
-		AnchorPane pane = new AnchorPane();
-		Leaderboard leaderboard = new Leaderboard();
-		// Create title
-		Text leaderboardText = new Text("Leaderboard");
-		leaderboardText.setLayoutY(55.0);
-		leaderboardText.setFont(new Font(57.0));
-		leaderboardText.setWrappingWidth(600.0);
+		AnchorPane anchorPane = new AnchorPane();
+		leaderboard = new Leaderboard();
+		Image menuImage = new Image("file:images/leaderboard_menu.png");
+		ImageView imageView = new ImageView();
+		imageView.setImage(menuImage);
+		anchorPane.getChildren().add(imageView);
 		// Create VBox to store names and score
-		VBox list = new VBox();
-		list.setLayoutX(125.0);
-		list.setLayoutY(81.0);
-		list.prefHeight(500.0);
-		list.prefWidth(350.0);
+		double layoutY = 125.0;
 		for (int i = 1; i <= 10; i++) {
 			// Create HBox for each person rank/name/score
-			HBox player = new HBox();
-			player.prefHeight(50.0);
-			player.prefWidth(200.0);
-			player.setSpacing(100.0);
-			Text rank = new Text(String.valueOf(i) + ".");
-			rank.setFont(new Font(21.0));
-			Text name = new Text(leaderboard.getName(i));
-			name.setFont(new Font(21.0));
-			Text score = new Text(String.valueOf(leaderboard.getScore(i)));
-			score.setFont(new Font(21.0));
-			player.getChildren().add(rank);
-			player.getChildren().add(name);
-			player.getChildren().add(score);
-			list.getChildren().add(player);
-
+			String name = leaderboard.getName(i);
+			String score = String.valueOf(leaderboard.getScore(i));
+			String playerScore = name + " " + score;
+			Text player = new Text(playerScore);
+			player.setLayoutX(127.0);
+			player.setLayoutY(layoutY);
+			player.setFont(new Font(30));
+			player.setFill(Color.WHITE);
+			anchorPane.getChildren().add(player);
+			layoutY += 49.0;
 		}
-		pane.getChildren().add(leaderboardText);
-		pane.getChildren().add(list);
-		Scene leaderboardScene = new Scene(pane, 600, 600);
+		Button back = new Button();
+		back.setLayoutX(14.0);
+		back.setLayoutY(14.0);
+		back.setPrefHeight(58.0);
+		back.setPrefWidth(90.0);
+		back.setOpacity(0);
+		back.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					start(stage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		anchorPane.getChildren().add(back);
+		Scene leaderboardScene = new Scene(anchorPane, 600, 600);
 		return leaderboardScene;
 	}
 	
@@ -382,6 +386,18 @@ public class MinesweeperView extends Application implements Observer {
 				try {
 					controller.revealSpace(row, col);
 					if (controller.isGameOver()) {
+						try {
+							leaderboard = new Leaderboard();
+							try {
+								leaderboard.addScore(playerName, (int)time);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
 						alert.showAndWait();
 					}
