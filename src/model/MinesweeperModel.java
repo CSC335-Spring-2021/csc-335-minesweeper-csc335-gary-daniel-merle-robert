@@ -96,9 +96,11 @@ public class MinesweeperModel extends Observable {
 		if (firstMove) {
 			// System.out.println("First move");
 			firstMove = false;
-			if (board.getTile(x, y).hasMine) {
-				setBombs(1);
-				board.setMine(x, y, false);
+			while (board.getTile(x, y).hasMine || board.numMinesNearby(x, y) > 0) {
+				firstMove = true;
+				board = new MinesweeperBoard(13);
+				setBombs(13);
+				revealSpaceHelper(x, y);
 			}
 			// Set display numbers for all tiles on first move
 			for (int i = 0; i < 13; i++) {
