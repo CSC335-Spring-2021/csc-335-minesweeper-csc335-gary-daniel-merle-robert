@@ -31,6 +31,11 @@ public class MinesweeperModel extends Observable {
 		firstMove = true;
 		// setBombs(board.bombCount);
 	}
+	
+	public MinesweeperModel(MinesweeperBoard board) {
+		this.board = board;
+		firstMove = false;
+	}
 
 	/**
 	 * Sets the bombs to random spots on the board. Uses logic to ensure that the
@@ -211,5 +216,11 @@ public class MinesweeperModel extends Observable {
 	public boolean getFirstMove() {
 		return firstMove;
 	}
-
+	
+	/**
+	 * Saves the game by serializing the board into a file named "save_game.dat"
+	 */
+	public void saveGame() {
+		board.saveBoard();
+	}
 }

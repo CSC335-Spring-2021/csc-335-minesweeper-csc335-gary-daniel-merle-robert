@@ -1,7 +1,10 @@
 package view;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
@@ -20,7 +23,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -44,6 +46,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import model.GameLostException;
 import model.Leaderboard;
 import model.MinesweeperBoard;
@@ -147,6 +150,7 @@ public class MinesweeperView extends Application implements Observer {
 		loadGameButton.setPrefHeight(41.0);
 		loadGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(loadGameButton);
+		loadGameButton.setOnAction(new LoadGame());
 
 		return anchorPane;
 	}
@@ -326,7 +330,24 @@ public class MinesweeperView extends Application implements Observer {
             playerName = getName.getEditor().getText();
 			stage.setScene(launchNewGame(stage));
 			time = 0;
+			stage.setOnCloseRequest(new GameClosed());
 		}
+	}
+	
+	private class GameClosed implements EventHandler<WindowEvent> {
+		@Override
+		public void handle(WindowEvent event) {
+			// If file exists
+			File save = new File("save_game.dat");
+			if (save.isFile() && !save.isDirectory()) {
+				save.delete();
+			}
+			if (controller.isGameOver()) {
+				return;
+			}
+			model.saveGame();
+		}
+		
 	}
 	
 	private class loadLeaderboard implements EventHandler<ActionEvent> {
@@ -427,6 +448,21 @@ public class MinesweeperView extends Application implements Observer {
 		}
 	}
 	
-	
-
+	private class LoadGame implements EventHandler<ActionEvent> {
+		@Override
+		public void handle(ActionEvent event) {
+			File save = new File("save_game.dat");
+			ObjectInputStream oos;
+			try {
+				oos = new ObjectInputStream(new FileInputStream(save));
+				System.out.println("yes");
+				MinesweeperBoard board = (MinesweeperBoard) oos.readObject();
+				oos.close();
+				model = new MinesweeperModel(board);
+			} catch (IOException | ClassNotFoundException e) {
+				// Revert to default if not found
+				model = new MinesweeperModel();
+			}
+		}
+	}
 }
