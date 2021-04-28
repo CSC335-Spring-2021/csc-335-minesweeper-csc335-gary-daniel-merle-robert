@@ -139,11 +139,13 @@ public class MinesweeperModel extends Observable {
 		}
 		// If mine is revealed, throw GameLostException
 		else if (board.getTile(x, y).hasMine) {
+			board.getTile(x,y).isCovered = true;
 			board.reveal(x, y);
 			throw new GameLostException("Game lost");
 		}
 		// Otherwise, recursively dig out neighbors
 		else if (board.numMinesNearby(x, y) == 0 && board.getTile(x, y).isCovered) {
+			board.getTile(x,y).isCovered = true;
 			board.reveal(x, y);
 			revealSpaceHelper(x + 1, y);
 			revealSpaceHelper(x - 1, y);
@@ -154,6 +156,7 @@ public class MinesweeperModel extends Observable {
 			revealSpaceHelper(x + 1, y - 1);
 			revealSpaceHelper(x - 1, y - 1);
 		} else {
+			board.getTile(x,y).isCovered = true;
 			board.reveal(x, y);
 		}
 	}
