@@ -207,5 +207,9 @@ public class MinesweeperModel extends Observable {
 	public int getMineCount() {
 		return board.bombCount;
 	}
+	
+	public boolean getFirstMove() {
+		return firstMove;
+	}
 
 }

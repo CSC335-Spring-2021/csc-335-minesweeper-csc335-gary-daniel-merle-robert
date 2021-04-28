@@ -83,5 +83,9 @@ public class MinesweeperController {
 	public void revealMines() {
 		model.revealMines();
 	}
+	
+	public boolean isFirstMove() {
+		return model.getFirstMove();
+	}
 
 }

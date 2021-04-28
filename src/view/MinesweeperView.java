@@ -60,20 +60,9 @@ public class MinesweeperView extends Application implements Observer {
 	private Leaderboard leaderboard;
 	private StackPane[][] gameTiles;
 	private Text timeDisplay;
-	private static Timer timer = new Timer();
-	private static boolean startOfGame = true;
+	private static Timer timer;
 	private double time = 0;
-	private TimerTask task = new TimerTask() {
-		@Override
-		public void run() {
-			time += 0.01;
-			DecimalFormat f = new DecimalFormat("#0.00");
-			// Needed to prevent user interface from freezing
-			Platform.runLater(() -> {
-				timeDisplay.setText("TIME: " + f.format(time));
-			});
-		}
-	};
+	private TimerTask task;
 
 	@Override
 	public void update(Observable o, Object arg) {
@@ -181,12 +170,7 @@ public class MinesweeperView extends Application implements Observer {
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
 		resetButton.setPrefWidth(119.0);
-		// A task can only be set once otherwise an exception will be thrown
-		if (startOfGame) {
-			// Every 10 milliseconds the run function for task is called
-			timer.scheduleAtFixedRate(task, 10, 10);
-			startOfGame = false;
-		}
+		
 		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0, 25.0, 25.0, 25.0));
@@ -382,13 +366,29 @@ public class MinesweeperView extends Application implements Observer {
 
 		@Override
 		public void handle(MouseEvent event) {
+			if(controller.isFirstMove()) {
+				timer = new Timer();
+				// A task can only be set once otherwise an exception will be thrown
+				task = new TimerTask() {
+					@Override
+					public void run() {
+						time += 0.01;
+						DecimalFormat f = new DecimalFormat("#0.00");
+						// Needed to prevent user interface from freezing
+						Platform.runLater(() -> {
+							timeDisplay.setText("TIME: " + f.format(time));
+						});
+					}
+				};
+				timer.scheduleAtFixedRate(task, 10, 10);
+			}
 			if (event.getButton() == MouseButton.PRIMARY) {
 				try {
 					controller.revealSpace(row, col);
 					if (controller.isGameOver()) {
 						timer.cancel();
 						timer.purge();
-						System.out.println("Final Time:" + time);
+						disable();
 						try {
 							leaderboard = new Leaderboard();
 							try {
@@ -405,12 +405,24 @@ public class MinesweeperView extends Application implements Observer {
 						alert.showAndWait();
 					}
 				} catch (GameLostException e) {
+					timer.cancel();
+					timer.purge();
+					disable();
 					controller.revealMines();
 					Alert alert = new Alert(AlertType.INFORMATION, "You Lost!");
 					alert.showAndWait();
 				}
 			} else if (event.getButton() == MouseButton.SECONDARY) {
 				controller.flagSpace(row, col);
+			}
+		}
+		
+		private void disable() {
+			for (int i = 0; i < SIZE_OF_BOARD; i++) {
+				for (int j = 0; j < SIZE_OF_BOARD; j++) {
+					StackPane gameTile = gameTiles[i][j];
+					gameTile.setDisable(true);
+				}
 			}
 		}
 	}
