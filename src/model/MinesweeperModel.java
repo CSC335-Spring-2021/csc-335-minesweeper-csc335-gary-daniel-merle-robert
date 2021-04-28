@@ -14,7 +14,7 @@ public class MinesweeperModel extends Observable {
 	public MinesweeperModel() {
 		board = new MinesweeperBoard(13);
 		firstMove = true;
-		setBombs(board.bombCount);
+		// setBombs(board.bombCount);
 	}
 
 	/**
@@ -29,7 +29,7 @@ public class MinesweeperModel extends Observable {
 		board = new MinesweeperBoard(13);
 		board.loadShapeFromFile("shapes/" + shape + ".txt");
 		firstMove = true;
-		setBombs(board.bombCount);
+		// setBombs(board.bombCount);
 	}
 
 	/**
@@ -82,6 +82,26 @@ public class MinesweeperModel extends Observable {
 		revealSpaceHelper(x, y);
 		notifyView();
 	}
+	
+	/**
+	 * This method sets a square of bombs around a location to either be true
+	 * or false. This is so that it ensures that the users first input
+	 * is always not a number but instead clears out space.
+	 * @param x A row coordiante.
+	 * @param y A column coordinate.
+	 * @param ans Boolean for setting bomb.
+	 */
+	public void bombSquare(int x, int y, boolean ans) {
+		board.getTile(x, y).setHasMine(ans);
+		board.getTile(x-1, y).setHasMine(ans);
+		board.getTile(x+1, y).setHasMine(ans);
+		board.getTile(x, y-1).setHasMine(ans);
+		board.getTile(x, y+1).setHasMine(ans);
+		board.getTile(x-1, y-1).setHasMine(ans);
+		board.getTile(x+1, y-1).setHasMine(ans);
+		board.getTile(x-1, y+1).setHasMine(ans);
+		board.getTile(x+1, y+1).setHasMine(ans);
+	}
 
 	/**
 	 * Private inner class that implements revealSpace without notifying observers
@@ -96,12 +116,9 @@ public class MinesweeperModel extends Observable {
 		if (firstMove) {
 			// System.out.println("First move");
 			firstMove = false;
-			while (board.getTile(x, y).hasMine || board.numMinesNearby(x, y) > 0) {
-				firstMove = true;
-				board = new MinesweeperBoard(13);
-				setBombs(13);
-				revealSpaceHelper(x, y);
-			}
+			bombSquare(x, y, true);
+			setBombs(board.bombCount);
+			bombSquare(x, y, false);
 			// Set display numbers for all tiles on first move
 			for (int i = 0; i < 13; i++) {
 				for (int j = 0; j < 13; j++) {
