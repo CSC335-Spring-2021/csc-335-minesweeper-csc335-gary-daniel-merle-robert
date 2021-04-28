@@ -386,6 +386,9 @@ public class MinesweeperView extends Application implements Observer {
 				try {
 					controller.revealSpace(row, col);
 					if (controller.isGameOver()) {
+						timer.cancel();
+						timer.purge();
+						System.out.println("Final Time:" + time);
 						try {
 							leaderboard = new Leaderboard();
 							try {
