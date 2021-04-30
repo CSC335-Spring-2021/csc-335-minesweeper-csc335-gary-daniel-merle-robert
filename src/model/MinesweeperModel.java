@@ -93,14 +93,24 @@ public class MinesweeperModel extends Observable {
 	 */
 	public void bombSquare(int x, int y, boolean ans) {
 		board.getTile(x, y).setHasMine(ans);
-		board.getTile(x-1, y).setHasMine(ans);
-		board.getTile(x+1, y).setHasMine(ans);
-		board.getTile(x, y-1).setHasMine(ans);
-		board.getTile(x, y+1).setHasMine(ans);
-		board.getTile(x-1, y-1).setHasMine(ans);
-		board.getTile(x+1, y-1).setHasMine(ans);
-		board.getTile(x-1, y+1).setHasMine(ans);
-		board.getTile(x+1, y+1).setHasMine(ans);
+		if (x > 0) {
+			board.getTile(x-1, y).setHasMine(ans);
+			if (y < board.getSize()-1)
+				board.getTile(x-1, y+1).setHasMine(ans);
+			if (y > 0)
+				board.getTile(x-1, y-1).setHasMine(ans);
+		}
+		if (y > 0) {
+			board.getTile(x, y-1).setHasMine(ans);
+			if (x < board.getSize()-1)
+				board.getTile(x+1, y-1).setHasMine(ans);
+		}
+		if (x < board.getSize()-1)
+			board.getTile(x+1, y).setHasMine(ans);
+		if (y < board.getSize()-1)
+			board.getTile(x, y+1).setHasMine(ans);
+		if (x < board.getSize()-1 && y < board.getSize()-1)
+			board.getTile(x+1, y+1).setHasMine(ans);
 	}
 
 	/**
