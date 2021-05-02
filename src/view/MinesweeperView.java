@@ -150,12 +150,12 @@ public class MinesweeperView extends Application implements Observer {
 		loadGameButton.setPrefHeight(41.0);
 		loadGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(loadGameButton);
-		loadGameButton.setOnAction(new LoadGame());
+		loadGameButton.setOnAction(new LoadGame(stage));
 
 		return anchorPane;
 	}
 
-	private Scene launchNewGame(Stage stage) {
+	private Scene launchNewGame(Stage stage, MinesweeperModel model) {
 		AnchorPane anchorPane = new AnchorPane();
 		Scene gameScene = new Scene(anchorPane, 619, 694);
 		VBox layout = new VBox();
@@ -178,18 +178,17 @@ public class MinesweeperView extends Application implements Observer {
 		resetButton.setOnAction(new NewGame(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0, 25.0, 25.0, 25.0));
-
+		
 		// Create Grid
 		gameTiles = createGameTiles();
 		GridPane board = createGameBoard(gameTiles);
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
-
-		this.model = new MinesweeperModel();
+		this.model = model;
 		this.controller = new MinesweeperController(model);
-		model.addObserver(this);
-		model.notifyView();
+		this.model.addObserver(this);
+		this.model.notifyView();
 
 		return gameScene;
 	}
@@ -295,7 +294,7 @@ public class MinesweeperView extends Application implements Observer {
 	}
 
 	private StackPane[][] createGameTiles() {
-		StackPane[][] stackPanes = new StackPane[13][13];
+		StackPane[][] stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
 		for (int r = 0; r < SIZE_OF_BOARD; r++) {
 			for (int c = 0; c < SIZE_OF_BOARD; c++) {
 				Rectangle square = new Rectangle(44, 44);
@@ -328,7 +327,7 @@ public class MinesweeperView extends Application implements Observer {
         	getName.showAndWait();
             // set the text of the label
             playerName = getName.getEditor().getText();
-			stage.setScene(launchNewGame(stage));
+			stage.setScene(launchNewGame(stage, new MinesweeperModel()));
 			time = 0;
 			stage.setOnCloseRequest(new GameClosed());
 		}
@@ -415,11 +414,9 @@ public class MinesweeperView extends Application implements Observer {
 							try {
 								leaderboard.addScore(playerName, (int)time);
 							} catch (IOException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 						} catch (FileNotFoundException e) {
-							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
@@ -449,19 +446,28 @@ public class MinesweeperView extends Application implements Observer {
 	}
 	
 	private class LoadGame implements EventHandler<ActionEvent> {
+		private Stage stage;
+		
+		public LoadGame(Stage stage) {
+			this.stage = stage;
+		}
+		
+		
 		@Override
 		public void handle(ActionEvent event) {
 			File save = new File("save_game.dat");
-			ObjectInputStream oos;
 			try {
-				oos = new ObjectInputStream(new FileInputStream(save));
-				System.out.println("yes");
+				ObjectInputStream oos = new ObjectInputStream(new FileInputStream(save));
 				MinesweeperBoard board = (MinesweeperBoard) oos.readObject();
 				oos.close();
-				model = new MinesweeperModel(board);
+				MinesweeperModel model = new MinesweeperModel(board);
+				stage.setScene(launchNewGame(stage, model));
+				stage.setOnCloseRequest(new GameClosed());
+				
 			} catch (IOException | ClassNotFoundException e) {
 				// Revert to default if not found
-				model = new MinesweeperModel();
+				Alert alert = new Alert(AlertType.INFORMATION, "Save file not found!");
+				alert.showAndWait();
 			}
 		}
 	}

@@ -35,6 +35,7 @@ public class MinesweeperModel extends Observable {
 	public MinesweeperModel(MinesweeperBoard board) {
 		this.board = board;
 		firstMove = false;
+		notifyView();
 	}
 
 	/**

@@ -1,10 +1,12 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * Class representing a tile within minesweeper board. Tiles can contain mines
  * or be empty.
  */
-public class Tile {
+public class Tile implements Serializable {
 
 	// Whether a tile is part of the board (used for custom shapes)
 	public boolean inBounds;
@@ -14,7 +16,8 @@ public class Tile {
 	public boolean hasMine;
 	// Integer describing how many mines are nearby
 	public Integer displayNum;
-
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * Constructs an instance of this class given inputs representing whether the
 	 * tile is in bounds (part of the board).
