@@ -16,8 +16,9 @@ public class MinesweeperBoard implements Serializable {
 
 	private Tile[][] board;
 	private int size;
-	public double time = 0;
+	public double time;
 	public int bombCount;
+	public String playerName;
 	static final long serialVersionUID = 1L;
 	
 	/**
@@ -227,8 +228,9 @@ public class MinesweeperBoard implements Serializable {
 	/**
 	 * Saves the current board into a file named "save_game.dat"
 	 */
-	public void saveBoard(double time) {
+	public void saveBoard(double time, String name) {
 		this.time = time;
+		this.playerName = name;
 		ObjectOutputStream oos;
 		try {
 			oos = new ObjectOutputStream(new FileOutputStream("save_game.dat"));

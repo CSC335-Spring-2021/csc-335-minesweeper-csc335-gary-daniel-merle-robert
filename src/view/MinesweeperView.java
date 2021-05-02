@@ -170,6 +170,7 @@ public class MinesweeperView extends Application implements Observer {
 		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
 		// Create timer text
 		if(controller.hasSave()) {
+			playerName = model.getName();
 			DecimalFormat f = new DecimalFormat("#0.00");
 			time = model.getTime();
 			timeDisplay = new Text("TIME: " + f.format(time));
@@ -351,10 +352,9 @@ public class MinesweeperView extends Application implements Observer {
 				save.delete();
 			}
 			if (controller.isGameOver() || controller.isLost()) {
-				System.out.println("yup");
 				return;
 			}
-			model.saveGame(time);
+			model.saveGame(time, playerName);
 		}
 		
 	}

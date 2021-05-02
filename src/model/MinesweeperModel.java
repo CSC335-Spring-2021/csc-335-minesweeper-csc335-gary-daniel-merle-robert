@@ -228,8 +228,8 @@ public class MinesweeperModel extends Observable {
 	/**
 	 * Saves the game by serializing the board into a file named "save_game.dat"
 	 */
-	public void saveGame(double time) {
-		board.saveBoard(time);
+	public void saveGame(double time, String name) {
+		board.saveBoard(time, name);
 	}
 	
 	public boolean getSave() {
@@ -242,5 +242,9 @@ public class MinesweeperModel extends Observable {
 	
 	public boolean getLost() {
 		return gameLost;
+	}
+	
+	public String getName() {
+		return board.playerName;
 	}
 }
