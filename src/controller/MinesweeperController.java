@@ -1,6 +1,5 @@
 package controller;
 
-import model.GameLostException;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
 
@@ -45,7 +44,7 @@ public class MinesweeperController {
 	 * 
 	 * @return
 	 */
-	public boolean isGameOver() {
+	public boolean hasWon() {
 		int tiles = 0;
 		for (int i = 0; i < 13; i++) {
 			for (int j = 0; j < 13; j++) {
@@ -63,7 +62,7 @@ public class MinesweeperController {
 	 * @param col
 	 * @throws GameLostException
 	 */
-	public void revealSpace(int row, int col) throws GameLostException {
+	public void revealSpace(int row, int col){
 		model.revealSpace(row, col);
 	}
 
@@ -92,7 +91,7 @@ public class MinesweeperController {
 		return model.getSave();
 	}
 	
-	public boolean isLost() {
+	public boolean hasLost() {
 		return model.getLost();
 	}
 }

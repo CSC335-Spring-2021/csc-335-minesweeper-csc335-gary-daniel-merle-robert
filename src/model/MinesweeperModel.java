@@ -90,7 +90,7 @@ public class MinesweeperModel extends Observable {
 	 * @param y A column coordinate.
 	 * @throws GameLostException If a mine is revealed
 	 */
-	public void revealSpace(int x, int y) throws GameLostException {
+	public void revealSpace(int x, int y){
 		revealSpaceHelper(x, y);
 		notifyView();
 	}
@@ -123,7 +123,7 @@ public class MinesweeperModel extends Observable {
 	 * @param y A column coordinate.
 	 * @throws GameLostException If a mine is revealed
 	 */
-	public void revealSpaceHelper(int x, int y) throws GameLostException {
+	public void revealSpaceHelper(int x, int y){
 		// If first move and mine is revealed, moves it to a different spot
 		if (firstMove) {
 			// System.out.println("First move");
@@ -154,7 +154,6 @@ public class MinesweeperModel extends Observable {
 			board.getTile(x,y).isCovered = true;
 			board.reveal(x, y);
 			gameLost = true;
-			throw new GameLostException("Game lost");
 		}
 		// Otherwise, recursively dig out neighbors
 		else if (board.numMinesNearby(x, y) == 0 && board.getTile(x, y).isCovered) {

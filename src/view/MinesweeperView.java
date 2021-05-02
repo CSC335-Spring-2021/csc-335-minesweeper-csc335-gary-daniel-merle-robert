@@ -47,7 +47,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import model.GameLostException;
 import model.Leaderboard;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
@@ -351,7 +350,7 @@ public class MinesweeperView extends Application implements Observer {
 			if (save.isFile() && !save.isDirectory()) {
 				save.delete();
 			}
-			if (controller.isGameOver() || controller.isLost()) {
+			if (controller.hasWon() || controller.hasLost()) {
 				return;
 			}
 			model.saveGame(time, playerName);
@@ -413,26 +412,25 @@ public class MinesweeperView extends Application implements Observer {
 				timer.scheduleAtFixedRate(task, 10, 10);
 			}
 			if (event.getButton() == MouseButton.PRIMARY) {
-				try {
-					controller.revealSpace(row, col);
-					if (controller.isGameOver()) {
-						timer.cancel();
-						timer.purge();
-						disable();
+				controller.revealSpace(row, col);
+				if (controller.hasWon()) {
+					timer.cancel();
+					timer.purge();
+					disable();
+					try {
+						leaderboard = new Leaderboard();
 						try {
-							leaderboard = new Leaderboard();
-							try {
-								leaderboard.addScore(playerName, (int)time);
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						} catch (FileNotFoundException e) {
+							leaderboard.addScore(playerName, (int)time);
+						} catch (IOException e) {
 							e.printStackTrace();
 						}
-						Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
-						alert.showAndWait();
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
 					}
-				} catch (GameLostException e) {
+					Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
+					alert.showAndWait();
+				}
+				else if (controller.hasLost()) {
 					timer.cancel();
 					timer.purge();
 					disable();
