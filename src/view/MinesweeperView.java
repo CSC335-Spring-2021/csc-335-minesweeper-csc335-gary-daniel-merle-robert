@@ -156,6 +156,9 @@ public class MinesweeperView extends Application implements Observer {
 	}
 
 	private Scene launchNewGame(Stage stage, MinesweeperModel model) {
+		this.model = model;
+		this.controller = new MinesweeperController(model);
+		
 		AnchorPane anchorPane = new AnchorPane();
 		Scene gameScene = new Scene(anchorPane, 619, 694);
 		VBox layout = new VBox();
@@ -166,7 +169,14 @@ public class MinesweeperView extends Application implements Observer {
 		topBar.setSpacing(400.0);
 		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
 		// Create timer text
-		timeDisplay = new Text("TIME: 0.00");
+		if(controller.hasSave()) {
+			DecimalFormat f = new DecimalFormat("#0.00");
+			time = model.getTime();
+			timeDisplay = new Text("TIME: " + f.format(time));
+		}
+		else {
+			timeDisplay = new Text("TIME: 0.00");
+		}
 		timeDisplay.setFont(new Font(18.0));
 		topBar.getChildren().add(timeDisplay);
 
@@ -185,8 +195,7 @@ public class MinesweeperView extends Application implements Observer {
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
-		this.model = model;
-		this.controller = new MinesweeperController(model);
+		
 		this.model.addObserver(this);
 		this.model.notifyView();
 
@@ -341,10 +350,11 @@ public class MinesweeperView extends Application implements Observer {
 			if (save.isFile() && !save.isDirectory()) {
 				save.delete();
 			}
-			if (controller.isGameOver()) {
+			if (controller.isGameOver() || controller.isLost()) {
+				System.out.println("yup");
 				return;
 			}
-			model.saveGame();
+			model.saveGame(time);
 		}
 		
 	}
@@ -386,7 +396,7 @@ public class MinesweeperView extends Application implements Observer {
 
 		@Override
 		public void handle(MouseEvent event) {
-			if(controller.isFirstMove()) {
+			if(controller.isFirstMove() || controller.hasSave()) {
 				timer = new Timer();
 				// A task can only be set once otherwise an exception will be thrown
 				task = new TimerTask() {
@@ -452,7 +462,6 @@ public class MinesweeperView extends Application implements Observer {
 			this.stage = stage;
 		}
 		
-		
 		@Override
 		public void handle(ActionEvent event) {
 			File save = new File("save_game.dat");
@@ -465,7 +474,6 @@ public class MinesweeperView extends Application implements Observer {
 				stage.setOnCloseRequest(new GameClosed());
 				
 			} catch (IOException | ClassNotFoundException e) {
-				// Revert to default if not found
 				Alert alert = new Alert(AlertType.INFORMATION, "Save file not found!");
 				alert.showAndWait();
 			}

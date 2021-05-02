@@ -6,6 +6,8 @@ import java.util.Random;
 public class MinesweeperModel extends Observable {
 	private MinesweeperBoard board;
 	private boolean firstMove;
+	private boolean save;
+	private boolean gameLost;
 
 	/**
 	 * Constructs the Minesweeper model, initializes the bomb locations and checks
@@ -14,6 +16,8 @@ public class MinesweeperModel extends Observable {
 	public MinesweeperModel() {
 		board = new MinesweeperBoard(13);
 		firstMove = true;
+		save = false;
+		gameLost = false;
 		// setBombs(board.bombCount);
 	}
 
@@ -29,13 +33,15 @@ public class MinesweeperModel extends Observable {
 		board = new MinesweeperBoard(13);
 		board.loadShapeFromFile("shapes/" + shape + ".txt");
 		firstMove = true;
+		save = false;
+		gameLost = false;
 		// setBombs(board.bombCount);
 	}
 	
 	public MinesweeperModel(MinesweeperBoard board) {
 		this.board = board;
 		firstMove = false;
-		notifyView();
+		save = true;
 	}
 
 	/**
@@ -147,6 +153,7 @@ public class MinesweeperModel extends Observable {
 		else if (board.getTile(x, y).hasMine) {
 			board.getTile(x,y).isCovered = true;
 			board.reveal(x, y);
+			gameLost = true;
 			throw new GameLostException("Game lost");
 		}
 		// Otherwise, recursively dig out neighbors
@@ -221,7 +228,19 @@ public class MinesweeperModel extends Observable {
 	/**
 	 * Saves the game by serializing the board into a file named "save_game.dat"
 	 */
-	public void saveGame() {
-		board.saveBoard();
+	public void saveGame(double time) {
+		board.saveBoard(time);
+	}
+	
+	public boolean getSave() {
+		return save;
+	}
+	
+	public double getTime() {
+		return board.time;
+	}
+	
+	public boolean getLost() {
+		return gameLost;
 	}
 }

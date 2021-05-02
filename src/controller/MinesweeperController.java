@@ -87,5 +87,12 @@ public class MinesweeperController {
 	public boolean isFirstMove() {
 		return model.getFirstMove();
 	}
-
+	
+	public boolean hasSave() {
+		return model.getSave();
+	}
+	
+	public boolean isLost() {
+		return model.getLost();
+	}
 }
