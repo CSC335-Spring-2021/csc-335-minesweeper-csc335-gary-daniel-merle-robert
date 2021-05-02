@@ -57,6 +57,9 @@ public class playerSorter implements Comparator<Player> {
 	}
 	
 	public void addScore(String name, int score) throws IOException {
+		if(name.isEmpty()) {
+			name = "Anon.";
+		}
 		Player newScore = new Player(name, score);
 		leaderboard.add(newScore);
 		leaderboard.sort(new playerSorter());

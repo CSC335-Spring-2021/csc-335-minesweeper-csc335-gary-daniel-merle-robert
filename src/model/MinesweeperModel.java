@@ -6,6 +6,8 @@ import java.util.Random;
 public class MinesweeperModel extends Observable {
 	private MinesweeperBoard board;
 	private boolean firstMove;
+	private boolean save;
+	private boolean gameLost;
 
 	/**
 	 * Constructs the Minesweeper model, initializes the bomb locations and checks
@@ -14,6 +16,8 @@ public class MinesweeperModel extends Observable {
 	public MinesweeperModel() {
 		board = new MinesweeperBoard(13);
 		firstMove = true;
+		save = false;
+		gameLost = false;
 		// setBombs(board.bombCount);
 	}
 
@@ -29,7 +33,15 @@ public class MinesweeperModel extends Observable {
 		board = new MinesweeperBoard(13);
 		board.loadShapeFromFile("shapes/" + shape + ".txt");
 		firstMove = true;
+		save = false;
+		gameLost = false;
 		// setBombs(board.bombCount);
+	}
+	
+	public MinesweeperModel(MinesweeperBoard board) {
+		this.board = board;
+		firstMove = false;
+		save = true;
 	}
 
 	/**
@@ -78,7 +90,7 @@ public class MinesweeperModel extends Observable {
 	 * @param y A column coordinate.
 	 * @throws GameLostException If a mine is revealed
 	 */
-	public void revealSpace(int x, int y) throws GameLostException {
+	public void revealSpace(int x, int y){
 		revealSpaceHelper(x, y);
 		notifyView();
 	}
@@ -121,7 +133,7 @@ public class MinesweeperModel extends Observable {
 	 * @param y A column coordinate.
 	 * @throws GameLostException If a mine is revealed
 	 */
-	public void revealSpaceHelper(int x, int y) throws GameLostException {
+	public void revealSpaceHelper(int x, int y){
 		// If first move and mine is revealed, moves it to a different spot
 		if (firstMove) {
 			// System.out.println("First move");
@@ -151,7 +163,7 @@ public class MinesweeperModel extends Observable {
 		else if (board.getTile(x, y).hasMine) {
 			board.getTile(x,y).isCovered = true;
 			board.reveal(x, y);
-			throw new GameLostException("Game lost");
+			gameLost = true;
 		}
 		// Otherwise, recursively dig out neighbors
 		else if (board.numMinesNearby(x, y) == 0 && board.getTile(x, y).isCovered) {
@@ -221,5 +233,27 @@ public class MinesweeperModel extends Observable {
 	public boolean getFirstMove() {
 		return firstMove;
 	}
-
+	
+	/**
+	 * Saves the game by serializing the board into a file named "save_game.dat"
+	 */
+	public void saveGame(double time, String name) {
+		board.saveBoard(time, name);
+	}
+	
+	public boolean getSave() {
+		return save;
+	}
+	
+	public double getTime() {
+		return board.time;
+	}
+	
+	public boolean getLost() {
+		return gameLost;
+	}
+	
+	public String getName() {
+		return board.playerName;
+	}
 }
