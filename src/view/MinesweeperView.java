@@ -185,7 +185,7 @@ public class MinesweeperView extends Application implements Observer {
 		resetButton.setPrefHeight(25.0);
 		resetButton.setPrefWidth(119.0);
 		
-		resetButton.setOnAction(new NewGame(stage));
+		resetButton.setOnAction(new NewGamemodeMenu(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0, 25.0, 25.0, 25.0));
 		
@@ -265,7 +265,7 @@ public class MinesweeperView extends Application implements Observer {
 		regularButton.setPrefHeight(41.0);
 		regularButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(regularButton);
-		regularButton.setOnAction(new NewGame(stage));
+		regularButton.setOnAction(new StartGame(stage));
 		
 		Button triangleButton = new Button("Triangle");
 		triangleButton.setLayoutX(161.0);
@@ -274,7 +274,7 @@ public class MinesweeperView extends Application implements Observer {
 		triangleButton.setPrefHeight(41.0);
 		triangleButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(triangleButton);
-		triangleButton.setOnAction(new NewGame(stage, "triangle"));
+		triangleButton.setOnAction(new StartGame(stage, "triangle"));
 		
 		Button donutButton = new Button("Donut");
 		donutButton.setLayoutX(161.0);
@@ -283,7 +283,7 @@ public class MinesweeperView extends Application implements Observer {
 		donutButton.setPrefHeight(41.0);
 		donutButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(donutButton);
-		donutButton.setOnAction(new NewGame(stage, "donut"));
+		donutButton.setOnAction(new StartGame(stage, "donut"));
 		
 		Scene gamemodeScene = new Scene(anchorPane, 600, 600);
 		return gamemodeScene;
@@ -324,15 +324,15 @@ public class MinesweeperView extends Application implements Observer {
 		return stackPanes;
 	}
 
-	private class NewGame implements EventHandler<ActionEvent> {
+	private class StartGame implements EventHandler<ActionEvent> {
 		private Stage stage;
 		private String shape;
 		
-		public NewGame(Stage stage) {
+		public StartGame(Stage stage) {
 			this.stage = stage;
 			this.shape = "";
 		}
-		public NewGame(Stage stage,String shape) {
+		public StartGame(Stage stage,String shape) {
 			this.stage = stage;
 			this.shape = shape;
 		}
@@ -345,7 +345,12 @@ public class MinesweeperView extends Application implements Observer {
         	getName.showAndWait();
             // set the text of the label
             playerName = getName.getEditor().getText();
-			stage.setScene(launchNewGame(stage, new MinesweeperModel(shape)));
+            if(shape.isEmpty()) {
+            	stage.setScene(launchNewGame(stage, new MinesweeperModel()));
+            }
+            else {
+            	stage.setScene(launchNewGame(stage, new MinesweeperModel(shape)));
+            }
 			time = 0;
 			stage.setOnCloseRequest(new GameClosed());
 		}
@@ -359,8 +364,12 @@ public class MinesweeperView extends Application implements Observer {
 			if (save.isFile() && !save.isDirectory()) {
 				save.delete();
 			}
-			if (controller.hasWon() || controller.hasLost()) {
+			if (controller.hasWon() || controller.hasLost() || controller.isFirstMove()) {
 				return;
+			}
+			if(!(timer == null)) {
+				timer.cancel();
+				timer.purge();
 			}
 			model.saveGame(time, playerName);
 		}
@@ -374,6 +383,10 @@ public class MinesweeperView extends Application implements Observer {
 		}
 		@Override
 		public void handle(ActionEvent event) {
+			if(!(timer == null)) {
+				timer.cancel();
+				timer.purge();
+			}
 			stage.setScene(gamemodeMenu(stage));
 		}
 	}
@@ -415,23 +428,25 @@ public class MinesweeperView extends Application implements Observer {
 
 		@Override
 		public void handle(MouseEvent event) {
-			if(controller.isFirstMove() || controller.hasSave()) {
-				timer = new Timer();
-				// A task can only be set once otherwise an exception will be thrown
-				task = new TimerTask() {
-					@Override
-					public void run() {
-						time += 0.01;
-						DecimalFormat f = new DecimalFormat("#0.00");
-						// Needed to prevent user interface from freezing
-						Platform.runLater(() -> {
-							timeDisplay.setText("TIME: " + f.format(time));
-						});
-					}
-				};
-				timer.scheduleAtFixedRate(task, 10, 10);
-			}
 			if (event.getButton() == MouseButton.PRIMARY) {
+				//Timer only starts when primary mouse button is clicked
+				if(controller.isFirstMove() || controller.hasSave()) {
+					timer = new Timer();
+					// A task can only be set once otherwise an exception will be thrown
+					task = new TimerTask() {
+						@Override
+						public void run() {
+							time += 0.01;
+							DecimalFormat f = new DecimalFormat("#0.00");
+							// Needed to prevent user interface from freezing
+							Platform.runLater(() -> {
+								timeDisplay.setText("TIME: " + f.format(time));
+							});
+						}
+					};
+					timer.scheduleAtFixedRate(task, 10, 10);
+				}
+				
 				controller.revealSpace(row, col);
 				if (controller.hasWon()) {
 					timer.cancel();
