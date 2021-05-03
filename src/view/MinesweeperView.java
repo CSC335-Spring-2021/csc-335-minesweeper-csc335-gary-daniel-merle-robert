@@ -131,7 +131,7 @@ public class MinesweeperView extends Application implements Observer {
 		newGameButton.setPrefHeight(41.0);
 		newGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(newGameButton);
-		newGameButton.setOnAction(new NewGame(stage));
+		newGameButton.setOnAction(new NewGamemodeMenu(stage));
 		
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setLayoutX(161.0);
@@ -202,7 +202,7 @@ public class MinesweeperView extends Application implements Observer {
 		return gameScene;
 	}
 
-	private Scene leaderboardMenu(Stage stage) throws FileNotFoundException {
+	private Scene leaderboardMenu(Stage stage) throws IOException {
 		AnchorPane anchorPane = new AnchorPane();
 		leaderboard = new Leaderboard();
 		Image menuImage = new Image("file:images/leaderboard_menu.png");
@@ -214,7 +214,9 @@ public class MinesweeperView extends Application implements Observer {
 		for (int i = 1; i <= 10; i++) {
 			// Create HBox for each person rank/name/score
 			String name = leaderboard.getName(i);
-			String score = String.valueOf(leaderboard.getScore(i));
+			String score = " ";
+			if(leaderboard.getScore(i) > 0)
+				score = String.valueOf(leaderboard.getScore(i));
 			String playerScore = name + " " + score;
 			Text player = new Text(playerScore);
 			player.setLayoutX(127.0);
@@ -272,7 +274,7 @@ public class MinesweeperView extends Application implements Observer {
 		triangleButton.setPrefHeight(41.0);
 		triangleButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(triangleButton);
-		triangleButton.setOnAction(new loadLeaderboard(stage));
+		triangleButton.setOnAction(new NewGame(stage, "triangle"));
 		
 		Button donutButton = new Button("Donut");
 		donutButton.setLayoutX(161.0);
@@ -281,6 +283,7 @@ public class MinesweeperView extends Application implements Observer {
 		donutButton.setPrefHeight(41.0);
 		donutButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(donutButton);
+		donutButton.setOnAction(new NewGame(stage, "donut"));
 		
 		Scene gamemodeScene = new Scene(anchorPane, 600, 600);
 		return gamemodeScene;
@@ -323,9 +326,15 @@ public class MinesweeperView extends Application implements Observer {
 
 	private class NewGame implements EventHandler<ActionEvent> {
 		private Stage stage;
-
+		private String shape;
+		
 		public NewGame(Stage stage) {
 			this.stage = stage;
+			this.shape = "";
+		}
+		public NewGame(Stage stage,String shape) {
+			this.stage = stage;
+			this.shape = shape;
 		}
 		@Override
 		public void handle(ActionEvent event) {
@@ -336,7 +345,7 @@ public class MinesweeperView extends Application implements Observer {
         	getName.showAndWait();
             // set the text of the label
             playerName = getName.getEditor().getText();
-			stage.setScene(launchNewGame(stage, new MinesweeperModel()));
+			stage.setScene(launchNewGame(stage, new MinesweeperModel(shape)));
 			time = 0;
 			stage.setOnCloseRequest(new GameClosed());
 		}
@@ -357,6 +366,17 @@ public class MinesweeperView extends Application implements Observer {
 		}
 		
 	}
+	private class NewGamemodeMenu implements EventHandler<ActionEvent> {
+		private Stage stage;
+
+		public NewGamemodeMenu(Stage stage) {
+			this.stage = stage;
+		}
+		@Override
+		public void handle(ActionEvent event) {
+			stage.setScene(gamemodeMenu(stage));
+		}
+	}
 	
 	private class loadLeaderboard implements EventHandler<ActionEvent> {
 		private Stage stage;
@@ -369,7 +389,7 @@ public class MinesweeperView extends Application implements Observer {
 		public void handle(ActionEvent arg0) {
 			try {
 				stage.setScene(leaderboardMenu(stage));
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -424,7 +444,7 @@ public class MinesweeperView extends Application implements Observer {
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
-					} catch (FileNotFoundException e) {
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
