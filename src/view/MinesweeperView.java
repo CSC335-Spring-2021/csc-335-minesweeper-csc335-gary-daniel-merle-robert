@@ -1,6 +1,10 @@
 package view;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
@@ -19,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -41,7 +46,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.GameLostException;
+import javafx.stage.WindowEvent;
 import model.Leaderboard;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
@@ -53,23 +58,14 @@ public class MinesweeperView extends Application implements Observer {
 	private MinesweeperModel model;
 	private MinesweeperController controller;
 	private final int SIZE_OF_BOARD = 13;
+	private String playerName = "";
+	private Leaderboard leaderboard;
 	private StackPane[][] gameTiles;
 	private Text timeDisplay;
-	private static Timer timer = new Timer();
-	private static boolean startOfGame = true;
+	private static Timer timer;
 	private double time = 0;
 	private boolean renderBlack = true;
-	private TimerTask task = new TimerTask() {
-		@Override
-		public void run() {
-			time += 0.01;
-			DecimalFormat f = new DecimalFormat("#0.00");
-			// Needed to prevent user interface from freezing
-			Platform.runLater(() -> {
-				timeDisplay.setText("TIME: " + f.format(time));
-			});
-		}
-	};
+	private TimerTask task;
 
 	@Override
 	public void update(Observable o, Object arg) {
@@ -90,7 +86,7 @@ public class MinesweeperView extends Application implements Observer {
 						}
 						// Condition 1: Covered + flagged
 						else if (tile.isCovered && tile.isFlagged) {
-							Image img = new Image("file:images/flagged_tile.png");
+							Image img = new Image("file:images/flagged_tile-2.png");
 							((Rectangle) node).setFill(new ImagePattern(img));
 						}
 						// Condition 2: Covered + no flag
@@ -100,7 +96,7 @@ public class MinesweeperView extends Application implements Observer {
 						}
 						// Condition 3: Uncovered + has mine
 						else if (!tile.isCovered && tile.hasMine) {
-							Image img = new Image("file:images/bombUncovered.png");
+							Image img = new Image("file:images/bombUncovered-2.png");
 							((Rectangle) node).setFill(new ImagePattern(img));
 						}
 						// Condition 4: Uncovered + mines nearby
@@ -127,24 +123,24 @@ public class MinesweeperView extends Application implements Observer {
 	private AnchorPane createGameMenu(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
 
-		Image menuImage = new Image("file:images/dababy.jpg");
+		Image menuImage = new Image("file:images/devilsweeper.png");
 		ImageView imageView = new ImageView();
 		imageView.setImage(menuImage);
 		anchorPane.getChildren().add(imageView);
 
 		Button newGameButton = new Button("New Game");
 		newGameButton.setLayoutX(161.0);
-		newGameButton.setLayoutY(300.0);
-		newGameButton.setOpacity(0.69);
+		newGameButton.setLayoutY(345.0);
+		newGameButton.setOpacity(0.00);
 		newGameButton.setPrefHeight(41.0);
 		newGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(newGameButton);
-		newGameButton.setOnAction(new NewGame(stage));
-
+		newGameButton.setOnAction(new NewGamemodeMenu(stage));
+		
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setLayoutX(161.0);
-		leaderboardButton.setLayoutY(357.0);
-		leaderboardButton.setOpacity(0.69);
+		leaderboardButton.setLayoutY(404.0);
+		leaderboardButton.setOpacity(0.00);
 		leaderboardButton.setPrefHeight(41.0);
 		leaderboardButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(leaderboardButton);
@@ -152,22 +148,20 @@ public class MinesweeperView extends Application implements Observer {
 
 		Button loadGameButton = new Button("Load Game");
 		loadGameButton.setLayoutX(161.0);
-		loadGameButton.setLayoutY(416.0);
-		loadGameButton.setOpacity(0.69);
+		loadGameButton.setLayoutY(464.0);
+		loadGameButton.setOpacity(0.00);
 		loadGameButton.setPrefHeight(41.0);
 		loadGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(loadGameButton);
-
-		Text title = new Text("Minesweeper");
-		title.setLayoutX(62.0);
-		title.setLayoutY(66.0);
-		title.setFont(new Font(81.0));
-		anchorPane.getChildren().add(title);
+		loadGameButton.setOnAction(new LoadGame(stage));
 
 		return anchorPane;
 	}
 
-	private Scene launchNewGame(Stage stage) {
+	private Scene launchNewGame(Stage stage, MinesweeperModel model) {
+		this.model = model;
+		this.controller = new MinesweeperController(model);
+		
 		AnchorPane anchorPane = new AnchorPane();
 		Scene gameScene = new Scene(anchorPane, 619, 694);
 		VBox layout = new VBox();
@@ -178,7 +172,15 @@ public class MinesweeperView extends Application implements Observer {
 		topBar.setSpacing(400.0);
 		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
 		// Create timer text
-		timeDisplay = new Text("TIME: 0.00");
+		if(controller.hasSave()) {
+			playerName = model.getName();
+			DecimalFormat f = new DecimalFormat("#0.00");
+			time = model.getTime();
+			timeDisplay = new Text("TIME: " + f.format(time));
+		}
+		else {
+			timeDisplay = new Text("TIME: 0.00");
+		}
 		timeDisplay.setFont(new Font(18.0));
 		topBar.getChildren().add(timeDisplay);
 
@@ -186,16 +188,11 @@ public class MinesweeperView extends Application implements Observer {
 		Button resetButton = new Button("New Game");
 		resetButton.setPrefHeight(25.0);
 		resetButton.setPrefWidth(119.0);
-		// A task can only be set once otherwise an exception will be thrown
-		if (startOfGame) {
-			// Every 10 milliseconds the run function for task is called
-			timer.scheduleAtFixedRate(task, 10, 10);
-			startOfGame = false;
-		}
-		resetButton.setOnAction(new NewGame(stage));
+		
+		resetButton.setOnAction(new NewGamemodeMenu(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0, 25.0, 25.0, 25.0));
-
+		
 		// Create Grid
 		gameTiles = createGameTiles();
 		GridPane board = createGameBoard(gameTiles);
@@ -203,51 +200,100 @@ public class MinesweeperView extends Application implements Observer {
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
 
-		this.model = new MinesweeperModel("triangle");
-		this.controller = new MinesweeperController(model);
-		model.addObserver(this);
-		model.notifyView();
+		this.model.addObserver(this);
+		this.model.notifyView();
+
 
 		return gameScene;
 	}
 
-	public Scene leaderboardMenu(Stage stage) throws FileNotFoundException {
-		AnchorPane pane = new AnchorPane();
-		Leaderboard leaderboard = new Leaderboard();
+	private Scene leaderboardMenu(Stage stage) throws IOException {
+		AnchorPane anchorPane = new AnchorPane();
+		leaderboard = new Leaderboard();
+		Image menuImage = new Image("file:images/leaderboard_menu.png");
+		ImageView imageView = new ImageView();
+		imageView.setImage(menuImage);
+		anchorPane.getChildren().add(imageView);
+		// Create VBox to store names and score
+		double layoutY = 125.0;
+		for (int i = 1; i <= 10; i++) {
+			// Create HBox for each person rank/name/score
+			String name = leaderboard.getName(i);
+			String score = " ";
+			if(leaderboard.getScore(i) > 0)
+				score = String.valueOf(leaderboard.getScore(i));
+			String playerScore = name + " " + score;
+			Text player = new Text(playerScore);
+			player.setLayoutX(127.0);
+			player.setLayoutY(layoutY);
+			player.setFont(new Font(30));
+			player.setFill(Color.WHITE);
+			anchorPane.getChildren().add(player);
+			layoutY += 49.0;
+		}
+		Button back = new Button();
+		back.setLayoutX(14.0);
+		back.setLayoutY(14.0);
+		back.setPrefHeight(58.0);
+		back.setPrefWidth(90.0);
+		back.setOpacity(0);
+		back.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					start(stage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		anchorPane.getChildren().add(back);
+		Scene leaderboardScene = new Scene(anchorPane, 600, 600);
+		return leaderboardScene;
+	}
+	
+	private Scene gamemodeMenu(Stage stage) {
+		AnchorPane anchorPane = new AnchorPane();
 		// Create title
-		Text leaderboardText = new Text("Leaderboard");
+		Text leaderboardText = new Text("Gamemode");
 		leaderboardText.setLayoutY(55.0);
 		leaderboardText.setFont(new Font(57.0));
 		leaderboardText.setWrappingWidth(600.0);
-		// Create VBox to store names and score
-		VBox list = new VBox();
-		list.setLayoutX(125.0);
-		list.setLayoutY(81.0);
-		list.prefHeight(500.0);
-		list.prefWidth(350.0);
-		for (int i = 1; i <= 10; i++) {
-			// Create HBox for each person rank/name/score
-			HBox player = new HBox();
-			player.prefHeight(50.0);
-			player.prefWidth(200.0);
-			player.setSpacing(100.0);
-			Text rank = new Text(String.valueOf(i) + ".");
-			rank.setFont(new Font(21.0));
-			Text name = new Text(leaderboard.getName(i));
-			name.setFont(new Font(21.0));
-			Text score = new Text(String.valueOf(leaderboard.getScore(i)));
-			score.setFont(new Font(21.0));
-			player.getChildren().add(rank);
-			player.getChildren().add(name);
-			player.getChildren().add(score);
-			list.getChildren().add(player);
-
-		}
-		pane.getChildren().add(leaderboardText);
-		pane.getChildren().add(list);
-		Scene leaderboardScene = new Scene(pane, 600, 600);
-		return leaderboardScene;
+		
+		Button regularButton = new Button("Regular");
+		regularButton.setLayoutX(161.0);
+		regularButton.setLayoutY(300.0);
+		regularButton.setOpacity(0.69);
+		regularButton.setPrefHeight(41.0);
+		regularButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(regularButton);
+		regularButton.setOnAction(new StartGame(stage));
+		
+		Button triangleButton = new Button("Triangle");
+		triangleButton.setLayoutX(161.0);
+		triangleButton.setLayoutY(357.0);
+		triangleButton.setOpacity(0.69);
+		triangleButton.setPrefHeight(41.0);
+		triangleButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(triangleButton);
+		triangleButton.setOnAction(new StartGame(stage, "triangle"));
+		
+		Button donutButton = new Button("Donut");
+		donutButton.setLayoutX(161.0);
+		donutButton.setLayoutY(416.0);
+		donutButton.setOpacity(0.69);
+		donutButton.setPrefHeight(41.0);
+		donutButton.setPrefWidth(278.0);
+		anchorPane.getChildren().add(donutButton);
+		donutButton.setOnAction(new StartGame(stage, "donut"));
+		
+		Scene gamemodeScene = new Scene(anchorPane, 600, 600);
+		return gamemodeScene;
 	}
+	
 
 	private GridPane createGameBoard(StackPane[][] gameTiles) {
 		// Create gridpane and set background and insets
@@ -265,7 +311,7 @@ public class MinesweeperView extends Application implements Observer {
 	}
 
 	private StackPane[][] createGameTiles() {
-		StackPane[][] stackPanes = new StackPane[13][13];
+		StackPane[][] stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
 		for (int r = 0; r < SIZE_OF_BOARD; r++) {
 			for (int c = 0; c < SIZE_OF_BOARD; c++) {
 				Rectangle square = new Rectangle(44, 44);
@@ -283,18 +329,70 @@ public class MinesweeperView extends Application implements Observer {
 		return stackPanes;
 	}
 
-	private class NewGame implements EventHandler<ActionEvent> {
+	private class StartGame implements EventHandler<ActionEvent> {
 		private Stage stage;
-
-		public NewGame(Stage stage) {
+		private String shape;
+		
+		public StartGame(Stage stage) {
 			this.stage = stage;
+			this.shape = "";
 		}
-
+		public StartGame(Stage stage,String shape) {
+			this.stage = stage;
+			this.shape = shape;
+		}
 		@Override
 		public void handle(ActionEvent event) {
 			// Resets time back to 0 if new game is called
-			stage.setScene(launchNewGame(stage));
+			TextInputDialog getName = new TextInputDialog();
+			getName.setHeaderText("Enter your name");
+			// show the text input dialog
+        	getName.showAndWait();
+            // set the text of the label
+            playerName = getName.getEditor().getText();
+            if(shape.isEmpty()) {
+            	stage.setScene(launchNewGame(stage, new MinesweeperModel()));
+            }
+            else {
+            	stage.setScene(launchNewGame(stage, new MinesweeperModel(shape)));
+            }
 			time = 0;
+			stage.setOnCloseRequest(new GameClosed());
+		}
+	}
+	
+	private class GameClosed implements EventHandler<WindowEvent> {
+		@Override
+		public void handle(WindowEvent event) {
+			// If file exists
+			File save = new File("save_game.dat");
+			if (save.isFile() && !save.isDirectory()) {
+				save.delete();
+			}
+			if (controller.hasWon() || controller.hasLost() || controller.isFirstMove()) {
+				return;
+			}
+			if(!(timer == null)) {
+				timer.cancel();
+				timer.purge();
+			}
+			model.saveGame(time, playerName);
+		}
+		
+	}
+	private class NewGamemodeMenu implements EventHandler<ActionEvent> {
+		private Stage stage;
+
+		public NewGamemodeMenu(Stage stage) {
+			this.stage = stage;
+		}
+		@Override
+		public void handle(ActionEvent event) {
+			if(!(timer == null)) {
+				timer.cancel();
+				timer.purge();
+			}
+			stage.setScene(gamemodeMenu(stage));
 		}
 	}
 
@@ -309,7 +407,7 @@ public class MinesweeperView extends Application implements Observer {
 		public void handle(ActionEvent arg0) {
 			try {
 				stage.setScene(leaderboardMenu(stage));
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -336,13 +434,46 @@ public class MinesweeperView extends Application implements Observer {
 		@Override
 		public void handle(MouseEvent event) {
 			if (event.getButton() == MouseButton.PRIMARY) {
-				try {
-					controller.revealSpace(row, col);
-					if (controller.isGameOver()) {
-						Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
-						alert.showAndWait();
+				//Timer only starts when primary mouse button is clicked
+				if(controller.isFirstMove() || controller.hasSave()) {
+					timer = new Timer();
+					// A task can only be set once otherwise an exception will be thrown
+					task = new TimerTask() {
+						@Override
+						public void run() {
+							time += 0.01;
+							DecimalFormat f = new DecimalFormat("#0.00");
+							// Needed to prevent user interface from freezing
+							Platform.runLater(() -> {
+								timeDisplay.setText("TIME: " + f.format(time));
+							});
+						}
+					};
+					timer.scheduleAtFixedRate(task, 10, 10);
+				}
+				
+				controller.revealSpace(row, col);
+				if (controller.hasWon()) {
+					timer.cancel();
+					timer.purge();
+					disable();
+					try {
+						leaderboard = new Leaderboard();
+						try {
+							leaderboard.addScore(playerName, (int)time);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-				} catch (GameLostException e) {
+					Alert alert = new Alert(AlertType.INFORMATION, "You Won!");
+					alert.showAndWait();
+				}
+				else if (controller.hasLost()) {
+					timer.cancel();
+					timer.purge();
+					disable();
 					controller.revealMines();
 					Alert alert = new Alert(AlertType.INFORMATION, "You Lost!");
 					alert.showAndWait();
@@ -351,6 +482,39 @@ public class MinesweeperView extends Application implements Observer {
 				controller.flagSpace(row, col);
 			}
 		}
+		
+		private void disable() {
+			for (int i = 0; i < SIZE_OF_BOARD; i++) {
+				for (int j = 0; j < SIZE_OF_BOARD; j++) {
+					StackPane gameTile = gameTiles[i][j];
+					gameTile.setDisable(true);
+				}
+			}
+		}
 	}
-
+	
+	private class LoadGame implements EventHandler<ActionEvent> {
+		private Stage stage;
+		
+		public LoadGame(Stage stage) {
+			this.stage = stage;
+		}
+		
+		@Override
+		public void handle(ActionEvent event) {
+			File save = new File("save_game.dat");
+			try {
+				ObjectInputStream oos = new ObjectInputStream(new FileInputStream(save));
+				MinesweeperBoard board = (MinesweeperBoard) oos.readObject();
+				oos.close();
+				MinesweeperModel model = new MinesweeperModel(board);
+				stage.setScene(launchNewGame(stage, model));
+				stage.setOnCloseRequest(new GameClosed());
+				
+			} catch (IOException | ClassNotFoundException e) {
+				Alert alert = new Alert(AlertType.INFORMATION, "Save file not found!");
+				alert.showAndWait();
+			}
+		}
+	}
 }
