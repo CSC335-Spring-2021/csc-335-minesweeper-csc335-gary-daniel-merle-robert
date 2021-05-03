@@ -3,6 +3,7 @@ package model;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,8 +38,12 @@ public class playerSorter implements Comparator<Player> {
 	
 	private ArrayList<Player> leaderboard = new ArrayList<Player>();
 	
-	public Leaderboard() throws FileNotFoundException {
-		Scanner readFile = new Scanner(new File("leaderboard/leaderboard.txt"));
+	public Leaderboard() throws IOException {
+		File file = new File("leaderboard/leaderboard.txt");
+		if(!file.exists()) {
+			file.createNewFile();
+		}
+		Scanner readFile = new Scanner(file);
 		while(readFile.hasNextLine()) {
 			String line = readFile.nextLine();
 			String [] lineArray = line.split(" ");
@@ -46,13 +51,20 @@ public class playerSorter implements Comparator<Player> {
 			leaderboard.add(newPlayer);
 		}
 		leaderboard.sort(new playerSorter());
+		readFile.close();
 	}
 	
 	public String getName(int rank) {
+		if(rank > leaderboard.size()) {
+			return "";
+		}
 		return leaderboard.get(rank-1).getName();
 	}
 	
 	public Integer getScore(int rank) {
+		if(rank > leaderboard.size()) {
+			return 0;
+		}
 		return leaderboard.get(rank-1).getScore();
 	}
 	
@@ -63,10 +75,17 @@ public class playerSorter implements Comparator<Player> {
 		Player newScore = new Player(name, score);
 		leaderboard.add(newScore);
 		leaderboard.sort(new playerSorter());
-		leaderboard.remove(leaderboard.size()-1);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(new File("leaderboard/leaderboard.txt"), false));
+		if(leaderboard.size() > 10)
+			leaderboard.remove(leaderboard.size()-1);
+		File file = new File("leaderboard/leaderboard.txt");
+		System.out.println(file.exists());
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
 		for(Player players:leaderboard) {
-			String line = players.getName() + " " + String.valueOf(players.getScore());
+			System.out.println("reach");
+			String playerScore = " ";
+			if(players.getScore() > 0)
+				playerScore = String.valueOf(players.getScore());
+			String line = (players.getName() + " " + playerScore);
 			System.out.println(line);
 			writer.write(line);
 			writer.newLine();
