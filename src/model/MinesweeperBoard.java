@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Scanner;
 import java.io.Serializable;
+import java.util.Scanner;
 
 /**
  * A class representing a board containing tiles for minesweeper. Supports
@@ -20,7 +20,7 @@ public class MinesweeperBoard implements Serializable {
 	public int bombCount;
 	public String playerName;
 	static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Constructs a board given a size.
 	 * 
@@ -65,9 +65,9 @@ public class MinesweeperBoard implements Serializable {
 				}
 				for (int c = 0; c < size; c++) {
 					if (row[c].equals("o")) {
-						board[r][c].inBounds = true;
+						setBounds(r, c, true);
 					} else if (row[c].equals("_")) {
-						board[r][c].inBounds = false;
+						setBounds(r, c, false);
 					} else {
 						break;
 					}
@@ -109,17 +109,6 @@ public class MinesweeperBoard implements Serializable {
 	 */
 	public void setMine(int r, int c, boolean hasMine) {
 		board[r][c].setHasMine(hasMine);
-	}
-
-	/**
-	 * Places or removes a flag at a given coordinate
-	 * 
-	 * @param r    A row coordinate
-	 * @param c    A column coordinate
-	 * @param flag Whether a flag should be placed.
-	 */
-	public void setFlagged(int r, int c, boolean flag) {
-		board[r][c].isFlagged = flag;
 	}
 
 	/**
@@ -224,7 +213,7 @@ public class MinesweeperBoard implements Serializable {
 			}
 		}
 	}
-	
+
 	/**
 	 * Saves the current board into a file named "save_game.dat"
 	 */

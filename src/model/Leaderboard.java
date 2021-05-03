@@ -14,28 +14,32 @@ public class Leaderboard {
 	public class Player {
 		private String name;
 		private Integer score;
+
 		public Player(String name, Integer score) {
 			this.name = name;
 			this.score = score;
 		}
+
 		public String getName() {
 			return name;
 		}
+
 		public Integer getScore() {
 			return score;
 		}
-		
-	}
-public class playerSorter implements Comparator<Player> {
 
-	@Override
-	public int compare(Player o1, Player o2) {
-		// TODO Auto-generated method stub
-		return o1.getScore().compareTo(o2.getScore());
 	}
-	
-}
-	
+
+	public class playerSorter implements Comparator<Player> {
+
+		@Override
+		public int compare(Player o1, Player o2) {
+			// TODO Auto-generated method stub
+			return o1.getScore().compareTo(o2.getScore());
+		}
+
+	}
+
 	private ArrayList<Player> leaderboard = new ArrayList<Player>();
 	
 	public Leaderboard() throws IOException {
@@ -46,30 +50,30 @@ public class playerSorter implements Comparator<Player> {
 		Scanner readFile = new Scanner(file);
 		while(readFile.hasNextLine()) {
 			String line = readFile.nextLine();
-			String [] lineArray = line.split(" ");
-			Player newPlayer = new Player(lineArray[0],Integer.parseInt(lineArray[1]));
+			String[] lineArray = line.split(" ");
+			Player newPlayer = new Player(lineArray[0], Integer.parseInt(lineArray[1]));
 			leaderboard.add(newPlayer);
 		}
 		leaderboard.sort(new playerSorter());
 		readFile.close();
 	}
-	
+
 	public String getName(int rank) {
 		if(rank > leaderboard.size()) {
 			return "";
 		}
 		return leaderboard.get(rank-1).getName();
 	}
-	
+
 	public Integer getScore(int rank) {
 		if(rank > leaderboard.size()) {
 			return 0;
 		}
 		return leaderboard.get(rank-1).getScore();
 	}
-	
+
 	public void addScore(String name, int score) throws IOException {
-		if(name.isEmpty()) {
+		if (name.isEmpty()) {
 			name = "Anon.";
 		}
 		Player newScore = new Player(name, score);
@@ -92,5 +96,5 @@ public class playerSorter implements Comparator<Player> {
 		}
 		writer.close();
 	}
-	
+
 }
