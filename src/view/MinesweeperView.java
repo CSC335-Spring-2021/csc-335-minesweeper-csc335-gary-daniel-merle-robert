@@ -64,6 +64,7 @@ public class MinesweeperView extends Application implements Observer {
 	private Text timeDisplay;
 	private static Timer timer;
 	private double time = 0;
+	private boolean renderBlack = true;
 	private TimerTask task;
 
 	@Override
@@ -78,8 +79,10 @@ public class MinesweeperView extends Application implements Observer {
 					if (node instanceof Rectangle) {
 						// Condition 0: Tile out of bounds
 						if (!tile.inBounds) {
-							Image img = new Image("file:images/blackTile.png");
-							((Rectangle) node).setFill(new ImagePattern(img));
+							if (renderBlack) {
+								Image img = new Image("file:images/blackTile.png");
+								((Rectangle) node).setFill(new ImagePattern(img));
+							}
 						}
 						// Condition 1: Covered + flagged
 						else if (tile.isCovered && tile.isFlagged) {
@@ -105,6 +108,7 @@ public class MinesweeperView extends Application implements Observer {
 				}
 			}
 		}
+		renderBlack = false;
 	}
 
 	@Override
@@ -141,7 +145,7 @@ public class MinesweeperView extends Application implements Observer {
 		leaderboardButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(leaderboardButton);
 		leaderboardButton.setOnAction(new loadLeaderboard(stage));
-		
+
 		Button loadGameButton = new Button("Load Game");
 		loadGameButton.setLayoutX(161.0);
 		loadGameButton.setLayoutY(464.0);
@@ -195,9 +199,10 @@ public class MinesweeperView extends Application implements Observer {
 		layout.getChildren().add(topBar);
 		layout.getChildren().add(board);
 		anchorPane.getChildren().add(layout);
-		
+
 		this.model.addObserver(this);
 		this.model.notifyView();
+
 
 		return gameScene;
 	}
@@ -390,10 +395,10 @@ public class MinesweeperView extends Application implements Observer {
 			stage.setScene(gamemodeMenu(stage));
 		}
 	}
-	
+
 	private class loadLeaderboard implements EventHandler<ActionEvent> {
 		private Stage stage;
-		
+
 		public loadLeaderboard(Stage stage) {
 			this.stage = stage;
 		}
@@ -406,7 +411,7 @@ public class MinesweeperView extends Application implements Observer {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}
 	}
 
