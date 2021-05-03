@@ -3,6 +3,11 @@ package model;
 import java.util.Observable;
 import java.util.Random;
 
+/**
+ * A model to represent a minesweeper game. A model contains a MinesweeperBoard
+ * class containing the underlying tiles, and enforces game logic by setting
+ * bombs and "digging" tiles (by revealing the space and relevant neighbors).
+ */
 public class MinesweeperModel extends Observable {
 	private MinesweeperBoard board;
 	private boolean firstMove;
@@ -41,6 +46,11 @@ public class MinesweeperModel extends Observable {
 		// setBombs(board.bombCount);
 	}
 
+	/**
+	 * Constructs a model given a previously constructed minesweeper board.
+	 * 
+	 * @param board A MinesweeperBoard instance
+	 */
 	public MinesweeperModel(MinesweeperBoard board) {
 		this.board = board;
 		firstMove = false;
@@ -72,7 +82,7 @@ public class MinesweeperModel extends Observable {
 	}
 
 	/**
-	 * Sets the seed of the random number generator for bombs. Used to testing.
+	 * Sets the seed of the random number generator for bombs. Used for testing.
 	 * 
 	 * @param seed A seed
 	 */
@@ -99,7 +109,6 @@ public class MinesweeperModel extends Observable {
 	 * 
 	 * @param x A row coordinate.
 	 * @param y A column coordinate.
-	 * @throws GameLostException If a mine is revealed
 	 */
 	public void revealSpace(int x, int y) {
 		revealSpaceHelper(x, y);
@@ -111,7 +120,7 @@ public class MinesweeperModel extends Observable {
 	 * false. This is so that it ensures that the users first input is always not a
 	 * number but instead clears out space.
 	 * 
-	 * @param x   A row coordiante.
+	 * @param x   A row coordinate.
 	 * @param y   A column coordinate.
 	 * @param ans Boolean for setting bomb.
 	 */
@@ -143,7 +152,6 @@ public class MinesweeperModel extends Observable {
 	 * 
 	 * @param x A row coordinate.
 	 * @param y A column coordinate.
-	 * @throws GameLostException If a mine is revealed
 	 */
 	public void revealSpaceHelper(int x, int y) {
 		// If first move and mine is revealed, moves it to a different spot
@@ -171,7 +179,7 @@ public class MinesweeperModel extends Observable {
 		if (board.getTile(x, y).isFlagged) {
 			return;
 		}
-		// If mine is revealed, throw GameLostException
+		// If mine is revealed
 		else if (board.getTile(x, y).hasMine) {
 			board.reveal(x, y);
 			gameLost = true;
@@ -218,8 +226,8 @@ public class MinesweeperModel extends Observable {
 	}
 
 	/**
-	 * Reveals all mines in the board. This method is called when the user clicks a
-	 * mine.
+	 * Reveals all mines in the board. This method can be called when the user
+	 * clicks a mine.
 	 */
 	public void revealMines() {
 		for (int i = 0; i < 13; i++) {
@@ -233,7 +241,7 @@ public class MinesweeperModel extends Observable {
 	}
 
 	/**
-	 * This method returns the number of mines on the board.
+	 * Returns the number of mines on the board.
 	 * 
 	 * @return bombCount Total number of mines.
 	 */
@@ -241,6 +249,11 @@ public class MinesweeperModel extends Observable {
 		return board.bombCount;
 	}
 
+	/**
+	 * Returns whether the next move will be the user's first move.
+	 * 
+	 * @return True if the user has not placed a move, false otherwise
+	 */
 	public boolean getFirstMove() {
 		return firstMove;
 	}
@@ -252,18 +265,40 @@ public class MinesweeperModel extends Observable {
 		board.saveBoard(time, name);
 	}
 
+	/**
+	 * Returns whether the model has been loaded from a previously saved board.
+	 * 
+	 * @return whether the model is loaded
+	 */
 	public boolean getSave() {
 		return save;
 	}
 
+	/**
+	 * If the game has been previously saved, returns the time of the game when the
+	 * board was saved.
+	 * 
+	 * @return The previous time
+	 */
 	public double getTime() {
 		return board.time;
 	}
 
+	/**
+	 * Returns whether the game has been lost.
+	 * 
+	 * @return whether the game has been lost
+	 */
 	public boolean getLost() {
 		return gameLost;
 	}
 
+	/**
+	 * If the game has been previously saved, returns the name of the player
+	 * associated with the loaded board.
+	 * 
+	 * @return The name of the player
+	 */
 	public String getName() {
 		return board.playerName;
 	}
