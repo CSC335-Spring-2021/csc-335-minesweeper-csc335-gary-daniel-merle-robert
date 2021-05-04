@@ -113,7 +113,6 @@ public class MinesweeperView extends Application implements Observer {
 		}
 		renderBlack = false;
 	}
-
 	@Override
 	public void start(Stage stage) throws Exception {
 		AnchorPane mainMenu = createGameMenu(stage);
@@ -122,15 +121,20 @@ public class MinesweeperView extends Application implements Observer {
 		stage.setScene(scene);
 		stage.show();
 	}
-
+	/**
+	 * This method creates the main menu that will be shown when the game
+	 * is launched.
+	 * @param stage
+	 * @return AnchorPane that will be added to the scene
+	 */
 	private AnchorPane createGameMenu(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
-
+		// Adds background image
 		Image menuImage = new Image("file:images/devilsweeper.png");
 		ImageView imageView = new ImageView();
 		imageView.setImage(menuImage);
 		anchorPane.getChildren().add(imageView);
-
+		// Adds New game button
 		Button newGameButton = new Button("New Game");
 		newGameButton.setLayoutX(161.0);
 		newGameButton.setLayoutY(345.0);
@@ -139,7 +143,7 @@ public class MinesweeperView extends Application implements Observer {
 		newGameButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(newGameButton);
 		newGameButton.setOnAction(new NewGamemodeMenu(stage));
-		
+		// Adds leaderboard button
 		Button leaderboardButton = new Button("Leaderboard");
 		leaderboardButton.setLayoutX(161.0);
 		leaderboardButton.setLayoutY(404.0);
@@ -148,7 +152,7 @@ public class MinesweeperView extends Application implements Observer {
 		leaderboardButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(leaderboardButton);
 		leaderboardButton.setOnAction(new loadLeaderboard(stage));
-
+		// Adds load game button
 		Button loadGameButton = new Button("Load Game");
 		loadGameButton.setLayoutX(161.0);
 		loadGameButton.setLayoutY(464.0);
@@ -160,19 +164,29 @@ public class MinesweeperView extends Application implements Observer {
 
 		return anchorPane;
 	}
-
+	/**
+	 * This method creates the main game menu, where the user will be 
+	 * presented with the minesweeper board and will be able to play.
+	 * @param stage
+	 * @param model
+	 * @return Scene
+	 */
 	private Scene launchNewGame(Stage stage, MinesweeperModel model) {
+		// Initialize model and controller
 		this.model = model;
 		this.controller = new MinesweeperController(model);
 		
 		AnchorPane anchorPane = new AnchorPane();
 		Scene gameScene = new Scene(anchorPane, 619, 694);
+		// VBox to create a vertical layout
 		VBox layout = new VBox();
 		// Create timer and new game button at top
+		// HBox to store timer and back button at the top of screen
 		HBox topBar = new HBox();
 		topBar.setPrefHeight(70.0);
 		topBar.setPrefWidth(600.0);
 		topBar.setSpacing(300.0);
+		// Set background of the top bar
 		BackgroundImage image = new BackgroundImage(new Image("file:images/game_bar.png"), 
 				BackgroundRepeat.NO_REPEAT,
 		        BackgroundRepeat.NO_REPEAT,
@@ -197,7 +211,6 @@ public class MinesweeperView extends Application implements Observer {
 		resetButton.setPrefHeight(30.0);
 		resetButton.setPrefWidth(250.0);
 		resetButton.setOpacity(0.0);
-		
 		resetButton.setOnAction(new NewGamemodeMenu(stage));
 		topBar.getChildren().add(resetButton);
 		topBar.setPadding(new Insets(25.0, 25.0, 25.0, 25.0));
@@ -215,9 +228,16 @@ public class MinesweeperView extends Application implements Observer {
 
 		return gameScene;
 	}
-
+	/**
+	 * This method creates the leaderboard scene to display the top 10
+	 * players and their scores.
+	 * @param stage
+	 * @return Scene
+	 * @throws IOException
+	 */
 	private Scene leaderboardMenu(Stage stage) throws IOException {
 		AnchorPane anchorPane = new AnchorPane();
+		// Initialize leaderboard and set background
 		leaderboard = new Leaderboard();
 		Image menuImage = new Image("file:images/leaderboard_menu.png");
 		ImageView imageView = new ImageView();
@@ -240,12 +260,14 @@ public class MinesweeperView extends Application implements Observer {
 			anchorPane.getChildren().add(player);
 			layoutY += 49.0;
 		}
+		// Add a back button to go to main menu
 		Button back = new Button();
 		back.setLayoutX(14.0);
 		back.setLayoutY(14.0);
 		back.setPrefHeight(58.0);
 		back.setPrefWidth(90.0);
 		back.setOpacity(0);
+		// Event to go back to main menu
 		back.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -263,15 +285,20 @@ public class MinesweeperView extends Application implements Observer {
 		Scene leaderboardScene = new Scene(anchorPane, 600, 600);
 		return leaderboardScene;
 	}
-	
+	/**
+	 * This method creates a scene that will allow a player to choose
+	 * from 3 different gamemodes.
+	 * @param stage
+	 * @return Scene
+	 */
 	private Scene gamemodeMenu(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
-		// Create title
+		// Create background
 		Image menuImage = new Image("file:images/game_selection.png");
 		ImageView imageView = new ImageView();
 		imageView.setImage(menuImage);
 		anchorPane.getChildren().add(imageView);
-		
+		//Regular gamemode button
 		Button regularButton = new Button("Regular");
 		regularButton.setLayoutX(161.0);
 		regularButton.setLayoutY(220.0);
@@ -280,7 +307,7 @@ public class MinesweeperView extends Application implements Observer {
 		regularButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(regularButton);
 		regularButton.setOnAction(new StartGame(stage));
-		
+		// Triangle gamemode button
 		Button triangleButton = new Button("Triangle");
 		triangleButton.setLayoutX(161.0);
 		triangleButton.setLayoutY(300.0);
@@ -289,7 +316,7 @@ public class MinesweeperView extends Application implements Observer {
 		triangleButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(triangleButton);
 		triangleButton.setOnAction(new StartGame(stage, "triangle"));
-		
+		// Donut gamemode button
 		Button donutButton = new Button("Donut");
 		donutButton.setLayoutX(161.0);
 		donutButton.setLayoutY(385.0);
@@ -298,7 +325,7 @@ public class MinesweeperView extends Application implements Observer {
 		donutButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(donutButton);
 		donutButton.setOnAction(new StartGame(stage, "donut"));
-		
+		// Back button to go to main menu
 		Button back = new Button();
 		back.setLayoutX(12.0);
 		back.setLayoutY(5.0);
@@ -324,7 +351,12 @@ public class MinesweeperView extends Application implements Observer {
 		return gamemodeScene;
 	}
 	
-
+	/**
+	 * Creates a gridpane that will represent the 13x13 grid for the 
+	 * minesweeper game.
+	 * @param gameTiles
+	 * @return GridPane
+	 */
 	private GridPane createGameBoard(StackPane[][] gameTiles) {
 		// Create gridpane and set background and insets
 		GridPane gameBoard = new GridPane();
@@ -339,7 +371,10 @@ public class MinesweeperView extends Application implements Observer {
 		}
 		return gameBoard;
 	}
-
+	/**
+	 * 
+	 * @return
+	 */
 	private StackPane[][] createGameTiles() {
 		StackPane[][] stackPanes = new StackPane[SIZE_OF_BOARD][SIZE_OF_BOARD];
 		for (int r = 0; r < SIZE_OF_BOARD; r++) {
