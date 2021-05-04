@@ -354,6 +354,7 @@ public class MinesweeperView extends Application implements Observer {
             	stage.setScene(launchNewGame(stage, new MinesweeperModel()));
             }
             else {
+            	renderBlack = true;
             	stage.setScene(launchNewGame(stage, new MinesweeperModel(shape)));
             }
 			time = 0;
