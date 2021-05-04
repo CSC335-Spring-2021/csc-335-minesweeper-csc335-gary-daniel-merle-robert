@@ -31,6 +31,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -169,8 +172,13 @@ public class MinesweeperView extends Application implements Observer {
 		HBox topBar = new HBox();
 		topBar.setPrefHeight(70.0);
 		topBar.setPrefWidth(600.0);
-		topBar.setSpacing(400.0);
-		topBar.setStyle("-fx-background-color: LIGHTBLUE;");
+		topBar.setSpacing(300.0);
+		BackgroundImage image = new BackgroundImage(new Image("file:images/game_bar.png"), 
+				BackgroundRepeat.NO_REPEAT,
+		        BackgroundRepeat.NO_REPEAT,
+		        BackgroundPosition.CENTER,
+		        null);
+		topBar.setBackground(new Background(image));
 		// Create timer text
 		if(controller.hasSave()) {
 			playerName = model.getName();
@@ -186,8 +194,9 @@ public class MinesweeperView extends Application implements Observer {
 
 		// Create New Game Button
 		Button resetButton = new Button("New Game");
-		resetButton.setPrefHeight(25.0);
-		resetButton.setPrefWidth(119.0);
+		resetButton.setPrefHeight(30.0);
+		resetButton.setPrefWidth(250.0);
+		resetButton.setOpacity(0.0);
 		
 		resetButton.setOnAction(new NewGamemodeMenu(stage));
 		topBar.getChildren().add(resetButton);
@@ -258,37 +267,58 @@ public class MinesweeperView extends Application implements Observer {
 	private Scene gamemodeMenu(Stage stage) {
 		AnchorPane anchorPane = new AnchorPane();
 		// Create title
-		Text leaderboardText = new Text("Gamemode");
-		leaderboardText.setLayoutY(55.0);
-		leaderboardText.setFont(new Font(57.0));
-		leaderboardText.setWrappingWidth(600.0);
+		Image menuImage = new Image("file:images/game_selection.png");
+		ImageView imageView = new ImageView();
+		imageView.setImage(menuImage);
+		anchorPane.getChildren().add(imageView);
 		
 		Button regularButton = new Button("Regular");
 		regularButton.setLayoutX(161.0);
-		regularButton.setLayoutY(300.0);
-		regularButton.setOpacity(0.69);
-		regularButton.setPrefHeight(41.0);
+		regularButton.setLayoutY(220.0);
+		regularButton.setOpacity(0.0);
+		regularButton.setPrefHeight(45.0);
 		regularButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(regularButton);
 		regularButton.setOnAction(new StartGame(stage));
 		
 		Button triangleButton = new Button("Triangle");
 		triangleButton.setLayoutX(161.0);
-		triangleButton.setLayoutY(357.0);
-		triangleButton.setOpacity(0.69);
-		triangleButton.setPrefHeight(41.0);
+		triangleButton.setLayoutY(300.0);
+		triangleButton.setOpacity(0.0);
+		triangleButton.setPrefHeight(45.0);
 		triangleButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(triangleButton);
 		triangleButton.setOnAction(new StartGame(stage, "triangle"));
 		
 		Button donutButton = new Button("Donut");
 		donutButton.setLayoutX(161.0);
-		donutButton.setLayoutY(416.0);
-		donutButton.setOpacity(0.69);
+		donutButton.setLayoutY(385.0);
+		donutButton.setOpacity(0.0);
 		donutButton.setPrefHeight(41.0);
 		donutButton.setPrefWidth(278.0);
 		anchorPane.getChildren().add(donutButton);
 		donutButton.setOnAction(new StartGame(stage, "donut"));
+		
+		Button back = new Button();
+		back.setLayoutX(12.0);
+		back.setLayoutY(5.0);
+		back.setPrefHeight(58.0);
+		back.setPrefWidth(90.0);
+		back.setOpacity(0.0);
+		back.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				try {
+					start(stage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		anchorPane.getChildren().add(back);
 		
 		Scene gamemodeScene = new Scene(anchorPane, 600, 600);
 		return gamemodeScene;
