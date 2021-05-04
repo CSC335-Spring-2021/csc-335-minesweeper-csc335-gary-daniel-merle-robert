@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import controller.MinesweeperController;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import model.Leaderboard;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
 
@@ -79,6 +80,24 @@ class MinesweeperTest {
 		assertFalse(board.getTile(0, 0).inBounds);
 		assertEquals(board.getSize(), 13);
 		// controller.printBoard();
+	}
+	/*
+	 * This test recieves over 90% however it is required that the original leadboard
+	 * text file be deleted or removed before and after the test. 
+	 */
+	@Test
+	void testLeaderboard() throws IOException {
+		Leaderboard board = new Leaderboard();
+		board.addScore("Testcase", 1);
+		assertEquals((int)board.getScore(1), 1);
+		assertEquals(board.getName(1),"Testcase");
+		assertEquals(board.getName(99),"");
+		assertEquals((int)board.getScore(99),0);
+		board.addScore("", 999);
+		Leaderboard board2 = new Leaderboard();
+		for(int i = 0;i<15;i++) {
+			board2.addScore("test",(int)Math.random()* 100 + 1);
+		}
 	}
 
 }
