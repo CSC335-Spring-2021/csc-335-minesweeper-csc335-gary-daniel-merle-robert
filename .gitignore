@@ -3,3 +3,5 @@ CSC335-Spring-2021:csc-335-minesweeper-csc335-gary-daniel-merle-robert- csc-335-
 csc335-spring2021-minesweeper.pdf
 csc335-spring2021-teamproject.pdf
 .DS_Store
+save_game.dat
+.classpath

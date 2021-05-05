@@ -2,17 +2,24 @@ package model;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Scanner;
 
 /**
  * A class representing a board containing tiles for minesweeper. Supports
  * various sizes and custom shapes.
  */
-public class MinesweeperBoard {
+public class MinesweeperBoard implements Serializable {
 
 	private Tile[][] board;
 	private int size;
+	public double time;
 	public int bombCount;
+	public String playerName;
+	static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructs a board given a size.
@@ -58,9 +65,9 @@ public class MinesweeperBoard {
 				}
 				for (int c = 0; c < size; c++) {
 					if (row[c].equals("o")) {
-						board[r][c].inBounds = true;
+						setBounds(r, c, true);
 					} else if (row[c].equals("_")) {
-						board[r][c].inBounds = false;
+						setBounds(r, c, false);
 					} else {
 						break;
 					}
@@ -102,17 +109,6 @@ public class MinesweeperBoard {
 	 */
 	public void setMine(int r, int c, boolean hasMine) {
 		board[r][c].setHasMine(hasMine);
-	}
-
-	/**
-	 * Places or removes a flag at a given coordinate
-	 * 
-	 * @param r    A row coordinate
-	 * @param c    A column coordinate
-	 * @param flag Whether a flag should be placed.
-	 */
-	public void setFlagged(int r, int c, boolean flag) {
-		board[r][c].isFlagged = flag;
 	}
 
 	/**
@@ -218,4 +214,19 @@ public class MinesweeperBoard {
 		}
 	}
 
+	/**
+	 * Saves the current board into a file named "save_game.dat"
+	 */
+	public void saveBoard(double time, String name) {
+		this.time = time;
+		this.playerName = name;
+		ObjectOutputStream oos;
+		try {
+			oos = new ObjectOutputStream(new FileOutputStream("save_game.dat"));
+			oos.writeObject(this);
+			oos.close();
+		} catch (IOException e) {
+			return;
+		}
+	}
 }

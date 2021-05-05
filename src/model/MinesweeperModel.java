@@ -6,6 +6,9 @@ import java.util.Random;
 public class MinesweeperModel extends Observable {
 	private MinesweeperBoard board;
 	private boolean firstMove;
+	private boolean save;
+	private boolean gameLost;
+	private Random rand;
 
 	/**
 	 * Constructs the Minesweeper model, initializes the bomb locations and checks
@@ -14,6 +17,9 @@ public class MinesweeperModel extends Observable {
 	public MinesweeperModel() {
 		board = new MinesweeperBoard(13);
 		firstMove = true;
+		save = false;
+		gameLost = false;
+		rand = new Random();
 		// setBombs(board.bombCount);
 	}
 
@@ -29,7 +35,16 @@ public class MinesweeperModel extends Observable {
 		board = new MinesweeperBoard(13);
 		board.loadShapeFromFile("shapes/" + shape + ".txt");
 		firstMove = true;
+		save = false;
+		gameLost = false;
+		rand = new Random();
 		// setBombs(board.bombCount);
+	}
+
+	public MinesweeperModel(MinesweeperBoard board) {
+		this.board = board;
+		firstMove = false;
+		save = true;
 	}
 
 	/**
@@ -40,7 +55,6 @@ public class MinesweeperModel extends Observable {
 	 * @param bombCount The number of bombs to place
 	 */
 	public void setBombs(int bombCount) {
-		Random rand = new Random();
 		// Starting Positions
 		while (bombCount > 0) {
 			int x = rand.nextInt(13);
@@ -55,6 +69,15 @@ public class MinesweeperModel extends Observable {
 			// System.out.println(x + " " + y);
 			bombCount -= 1;
 		}
+	}
+
+	/**
+	 * Sets the seed of the random number generator for bombs. Used to testing.
+	 * 
+	 * @param seed A seed
+	 */
+	public void setSeed(long seed) {
+		rand.setSeed(seed);
 	}
 
 	/**
@@ -78,39 +101,40 @@ public class MinesweeperModel extends Observable {
 	 * @param y A column coordinate.
 	 * @throws GameLostException If a mine is revealed
 	 */
-	public void revealSpace(int x, int y) throws GameLostException {
+	public void revealSpace(int x, int y) {
 		revealSpaceHelper(x, y);
 		notifyView();
 	}
-	
+
 	/**
-	 * This method sets a square of bombs around a location to either be true
-	 * or false. This is so that it ensures that the users first input
-	 * is always not a number but instead clears out space.
-	 * @param x A row coordiante.
-	 * @param y A column coordinate.
+	 * This method sets a square of bombs around a location to either be true or
+	 * false. This is so that it ensures that the users first input is always not a
+	 * number but instead clears out space.
+	 * 
+	 * @param x   A row coordiante.
+	 * @param y   A column coordinate.
 	 * @param ans Boolean for setting bomb.
 	 */
 	public void bombSquare(int x, int y, boolean ans) {
 		board.getTile(x, y).setHasMine(ans);
 		if (x > 0) {
-			board.getTile(x-1, y).setHasMine(ans);
-			if (y < board.getSize()-1)
-				board.getTile(x-1, y+1).setHasMine(ans);
+			board.getTile(x - 1, y).setHasMine(ans);
+			if (y < board.getSize() - 1)
+				board.getTile(x - 1, y + 1).setHasMine(ans);
 			if (y > 0)
-				board.getTile(x-1, y-1).setHasMine(ans);
+				board.getTile(x - 1, y - 1).setHasMine(ans);
 		}
 		if (y > 0) {
-			board.getTile(x, y-1).setHasMine(ans);
-			if (x < board.getSize()-1)
-				board.getTile(x+1, y-1).setHasMine(ans);
+			board.getTile(x, y - 1).setHasMine(ans);
+			if (x < board.getSize() - 1)
+				board.getTile(x + 1, y - 1).setHasMine(ans);
 		}
-		if (x < board.getSize()-1)
-			board.getTile(x+1, y).setHasMine(ans);
-		if (y < board.getSize()-1)
-			board.getTile(x, y+1).setHasMine(ans);
-		if (x < board.getSize()-1 && y < board.getSize()-1)
-			board.getTile(x+1, y+1).setHasMine(ans);
+		if (x < board.getSize() - 1)
+			board.getTile(x + 1, y).setHasMine(ans);
+		if (y < board.getSize() - 1)
+			board.getTile(x, y + 1).setHasMine(ans);
+		if (x < board.getSize() - 1 && y < board.getSize() - 1)
+			board.getTile(x + 1, y + 1).setHasMine(ans);
 	}
 
 	/**
@@ -121,7 +145,7 @@ public class MinesweeperModel extends Observable {
 	 * @param y A column coordinate.
 	 * @throws GameLostException If a mine is revealed
 	 */
-	public void revealSpaceHelper(int x, int y) throws GameLostException {
+	public void revealSpaceHelper(int x, int y) {
 		// If first move and mine is revealed, moves it to a different spot
 		if (firstMove) {
 			// System.out.println("First move");
@@ -149,13 +173,12 @@ public class MinesweeperModel extends Observable {
 		}
 		// If mine is revealed, throw GameLostException
 		else if (board.getTile(x, y).hasMine) {
-			board.getTile(x,y).isCovered = true;
 			board.reveal(x, y);
-			throw new GameLostException("Game lost");
+			gameLost = true;
 		}
 		// Otherwise, recursively dig out neighbors
 		else if (board.numMinesNearby(x, y) == 0 && board.getTile(x, y).isCovered) {
-			board.getTile(x,y).isCovered = true;
+			board.getTile(x, y).isCovered = true;
 			board.reveal(x, y);
 			revealSpaceHelper(x + 1, y);
 			revealSpaceHelper(x - 1, y);
@@ -166,7 +189,7 @@ public class MinesweeperModel extends Observable {
 			revealSpaceHelper(x + 1, y - 1);
 			revealSpaceHelper(x - 1, y - 1);
 		} else {
-			board.getTile(x,y).isCovered = true;
+			board.getTile(x, y).isCovered = true;
 			board.reveal(x, y);
 		}
 	}
@@ -217,9 +240,31 @@ public class MinesweeperModel extends Observable {
 	public int getMineCount() {
 		return board.bombCount;
 	}
-	
+
 	public boolean getFirstMove() {
 		return firstMove;
 	}
 
+	/**
+	 * Saves the game by serializing the board into a file named "save_game.dat"
+	 */
+	public void saveGame(double time, String name) {
+		board.saveBoard(time, name);
+	}
+
+	public boolean getSave() {
+		return save;
+	}
+
+	public double getTime() {
+		return board.time;
+	}
+
+	public boolean getLost() {
+		return gameLost;
+	}
+
+	public String getName() {
+		return board.playerName;
+	}
 }
