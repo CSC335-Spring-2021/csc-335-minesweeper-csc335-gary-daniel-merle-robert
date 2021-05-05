@@ -11,6 +11,8 @@ import java.util.Scanner;
 /**
  * A class representing a board containing tiles for minesweeper. Supports
  * various sizes and custom shapes.
+ * 
+ * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
  */
 public class MinesweeperBoard implements Serializable {
 
@@ -216,6 +218,9 @@ public class MinesweeperBoard implements Serializable {
 
 	/**
 	 * Saves the current board into a file named "save_game.dat"
+	 * 
+	 * @param time a double representing the time that the game was stopped
+	 * @param name a string representing the name of the player
 	 */
 	public void saveBoard(double time, String name) {
 		this.time = time;
