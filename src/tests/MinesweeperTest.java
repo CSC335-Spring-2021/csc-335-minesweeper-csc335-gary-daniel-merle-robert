@@ -18,7 +18,13 @@ import model.Leaderboard;
 import model.MinesweeperBoard;
 import model.MinesweeperModel;
 
-class MinesweeperTest {
+/**
+ * A test class for the methods in the controller, model, board, tile,
+ * and leaderboard class.
+ * 
+ * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
+ */
+public class MinesweeperTest {
 
 	/*
 	 * Tests and achieves 90% statement coverage on the following classes:

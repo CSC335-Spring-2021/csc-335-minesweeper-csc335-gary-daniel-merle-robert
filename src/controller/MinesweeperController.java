@@ -25,6 +25,30 @@ public class MinesweeperController {
 		this.model = model;
 		board = model.getBoard();
 	}
+	
+	/**
+	 * A method that prints out the current board. This method's only purpose is for testing.
+	 */
+	public void printBoard() {
+		for (int i = 1; i <= 13; i++) {
+			System.out.println("  -----------------------------------------------------");
+			System.out.print(Integer.toString(i) + " | ");
+			for (int j = 1; j <= 13; j++) {
+				if (!board.getTile(i - 1, j - 1).inBounds) {
+					System.out.print("-" + " | ");
+				} else if (board.getTile(i - 1, j - 1).hasMine) {
+					System.out.print("x" + " | ");
+				} else if (board.getTile(i - 1, j - 1).displayNum != 0) {
+					System.out.print(board.getTile(i - 1, j - 1).displayNum + " | ");
+				} else {
+					System.out.print("o" + " | ");
+				}
+			}
+			System.out.println();
+		}
+		System.out.println("  -----------------------------------------------------");
+		System.out.println("    a   b   c   d   e   f   g   h   i   j   k   l   m");
+	}
 
 	/**
 	 * Returns whether the game has been won.
