@@ -57,8 +57,8 @@ import model.Tile;
 /**
  * A view class for the minesweeper game. Holds a model and controller instance
  * as well as methods to setup up the graphical user interface and to update the 
- * board when changes are made. Handles multiple events for when a player attempts 
- * to make a move and when the player wants to start a new game or exit.
+ * board when changes are made. Handles multiple events when a player attempts 
+ * to make a move or when the player interacts with different scenes and buttons.
  * 
  * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
  */
@@ -187,6 +187,7 @@ public class MinesweeperView extends Application implements Observer {
 
 		return anchorPane;
 	}
+	
 	/**
 	 * This method creates the main game menu, where the user will be 
 	 * presented with the minesweeper board and will be able to play.
@@ -255,6 +256,7 @@ public class MinesweeperView extends Application implements Observer {
 
 		return gameScene;
 	}
+	
 	/**
 	 * This method creates the leaderboard scene to display the top 10
 	 * players and their scores.
@@ -452,7 +454,7 @@ public class MinesweeperView extends Application implements Observer {
 		 * Initializes StartGame with the current stage and the current game mode
 		 * 
 		 * @param stage where all visual parts of the JavaFX application are displayed
-		 * @param shape
+		 * @param shape a string that represents the game mode
 		 */
 		public StartGame(Stage stage,String shape) {
 			this.stage = stage;
@@ -519,14 +521,29 @@ public class MinesweeperView extends Application implements Observer {
 	}
 	
 	/**
+	 * Event handler that sets the window to the game mode menu screen
+	 * 
+	 * Upon click, the screen changes to the game mode menu
+	 * 
 	 * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
 	 */
 	private class NewGamemodeMenu implements EventHandler<ActionEvent> {
 		private Stage stage;
 
+		/**
+		 * Initializes NewGamemodeMenu with the current stage
+		 * 
+		 * @param stage where all visual parts of the JavaFX application are displayed
+		 */
 		public NewGamemodeMenu(Stage stage) {
 			this.stage = stage;
 		}
+		
+		/**
+		 * Handles the event when new game is clicked
+		 * 
+		 * @param event A action event object.
+		 */
 		@Override
 		public void handle(ActionEvent event) {
 			if(!(timer == null)) {
@@ -538,18 +555,32 @@ public class MinesweeperView extends Application implements Observer {
 	}
 
 	/**
+	 * Event handler that sets the window to the leaderboard
+	 * 
+	 * Upon click, the screen changes to the leaderboard
+	 * 
 	 * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
 	 *
 	 */
 	private class loadLeaderboard implements EventHandler<ActionEvent> {
 		private Stage stage;
 
+		/**
+		 * Initializes loadLeaderboard with the current stage
+		 * 
+		 * @param stage where all visual parts of the JavaFX application are displayed
+		 */
 		public loadLeaderboard(Stage stage) {
 			this.stage = stage;
 		}
 
+		/**
+		 * Handles the event when leaderboard is clicked
+		 * 
+		 * @param event A action event object.
+		 */
 		@Override
-		public void handle(ActionEvent arg0) {
+		public void handle(ActionEvent event) {
 			try {
 				stage.setScene(leaderboardMenu(stage));
 			} catch (IOException e) {
@@ -560,6 +591,12 @@ public class MinesweeperView extends Application implements Observer {
 	}
 
 	/**
+	 * Event handler for when a tile is clicked on the gameBoard.
+	 * 
+	 * This event handler supports both left and right mouse button inputs.
+	 * If the left button is clicked then the tile is revealed and if the 
+	 * right button is clicked then the tile is flagged.
+	 * 
 	 * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
 	 */
 	private class TileClicked implements EventHandler<MouseEvent> {
@@ -578,6 +615,11 @@ public class MinesweeperView extends Application implements Observer {
 			this.col = col;
 		}
 
+		/**
+		 * Handles the event when tile is clicked
+		 * 
+		 * @param event A mouse event object.
+		 */
 		@Override
 		public void handle(MouseEvent event) {
 			if (event.getButton() == MouseButton.PRIMARY) {
@@ -630,6 +672,9 @@ public class MinesweeperView extends Application implements Observer {
 			}
 		}
 		
+		/**
+		 * Disables the tiles when the game has ended
+		 */
 		private void disable() {
 			for (int i = 0; i < SIZE_OF_BOARD; i++) {
 				for (int j = 0; j < SIZE_OF_BOARD; j++) {
@@ -641,15 +686,29 @@ public class MinesweeperView extends Application implements Observer {
 	}
 	
 	/**
+	 * Event handler for when load game is clicked on the menu.
+	 * 
+	 * Upon click, checks if save exists and if it does loads the save
+	 * 
 	 * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
 	 */
 	private class LoadGame implements EventHandler<ActionEvent> {
 		private Stage stage;
 		
+		/**
+		 * Initializes LoadGame with the current stage
+		 * 
+		 * @param stage where all visual parts of the JavaFX application are displayed
+		 */
 		public LoadGame(Stage stage) {
 			this.stage = stage;
 		}
 		
+		/**
+		 * Handles the event when load game is clicked
+		 * 
+		 * @param event A mouse event object.
+		 */
 		@Override
 		public void handle(ActionEvent event) {
 			File save = new File("save_game.dat");
