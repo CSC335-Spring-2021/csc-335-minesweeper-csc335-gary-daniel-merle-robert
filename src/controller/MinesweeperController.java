@@ -17,9 +17,9 @@ public class MinesweeperController {
 	private MinesweeperModel model;
 
 	/**
-	 * Constructs the controller with a model instance.
+	 * Constructs an instance of this class given a model.
 	 * 
-	 * @param model The minesweeper model
+	 * @param model A MinesweeperModel instance
 	 */
 	public MinesweeperController(MinesweeperModel model) {
 		this.model = model;
@@ -27,7 +27,7 @@ public class MinesweeperController {
 	}
 	
 	/**
-	 * A method that prints out the current board. This method's only purpose is for testing.
+	 * Prints a string representation of the board. For convenience in testing only.
 	 */
 	public void printBoard() {
 		for (int i = 1; i <= 13; i++) {
@@ -53,7 +53,7 @@ public class MinesweeperController {
 	/**
 	 * Returns whether the game has been won.
 	 * 
-	 * @return a boolean that represents whether the game has been won or not
+	 * @return True if the game has been won, false otherwise
 	 */
 	public boolean hasWon() {
 		int tiles = 0;
@@ -68,7 +68,12 @@ public class MinesweeperController {
 	}
 
 	/**
-	 * Reveals a tile at the given coordinates
+	 * Calls the model's revealSpace method, which uses recursion to cave out the
+	 * area of blank spaces done by a click. It checks to make sure that it is in
+	 * range, and if not then it does nothing. It then checks if there is a bomb,
+	 * which prompts the end of the game. Next, if it is a covered spot and there
+	 * are 0 bombs nearby it clears itself and recursively calls again. The last
+	 * condition is if it touches a bomb, which is will just reveal the spot.
 	 * 
 	 * @param row A row coordinate
 	 * @param col A column coordinate
@@ -78,7 +83,7 @@ public class MinesweeperController {
 	}
 
 	/**
-	 * Flag the tile at the given coordinates
+	 * Flags a space on the board (removes if a flag existed).
 	 * 
 	 * @param row A row coordinate
 	 * @param col A column coordinate
@@ -96,27 +101,27 @@ public class MinesweeperController {
 	}
 
 	/**
-	 * Return whether or not it is currently the first move
+	 * Returns whether the next move will be the user's first move.
 	 * 
-	 * @return a boolean representing whether or not it is the first move
+	 * @return True if the user has not placed a move, false otherwise
 	 */
 	public boolean isFirstMove() {
 		return model.getFirstMove();
 	}
 
 	/**
-	 * Returns whether or not a previous save exists
+	 * Returns whether the model has been loaded from a previously saved board.
 	 * 
-	 * @return a boolean representing whether or not a previous save exists
+	 * @return whether the model is loaded
 	 */
 	public boolean hasSave() {
 		return model.getSave();
 	}
 
 	/**
-	 * Returns whether or not the game has been lost
+	 * Returns whether the game has been lost.
 	 * 
-	 * @return a boolean representing whether the game has been lost or not
+	 * @return whether the game has been lost
 	 */
 	public boolean hasLost() {
 		return model.getLost();
