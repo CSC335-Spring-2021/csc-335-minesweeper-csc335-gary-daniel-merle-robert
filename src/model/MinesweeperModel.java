@@ -7,6 +7,8 @@ import java.util.Random;
  * A model to represent a minesweeper game. A model contains a MinesweeperBoard
  * class containing the underlying tiles, and enforces game logic by setting
  * bombs and "digging" tiles (by revealing the space and relevant neighbors).
+ * 
+ * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
  */
 public class MinesweeperModel extends Observable {
 	private MinesweeperBoard board;

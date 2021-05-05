@@ -1,10 +1,5 @@
- 0
-Merle 0
- 48
- 65
- 77
- 81
- 90
-Swag 106
- 138
- 300
+Gary 46
+Player1 200
+Player2 250
+Player3 310
+Player4 400

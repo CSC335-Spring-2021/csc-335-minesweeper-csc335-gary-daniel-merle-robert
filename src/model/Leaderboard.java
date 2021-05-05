@@ -145,7 +145,6 @@ public class Leaderboard {
 			leaderboard.remove(leaderboard.size()-1);
 		// Writes players to a new file
 		File file = new File("leaderboard/leaderboard.txt");
-		System.out.println(file.exists());
 		BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
 		for(Player players:leaderboard) {
 			String playerScore = " ";
