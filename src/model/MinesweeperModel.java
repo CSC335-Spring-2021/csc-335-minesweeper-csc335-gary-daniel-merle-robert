@@ -3,6 +3,13 @@ package model;
 import java.util.Observable;
 import java.util.Random;
 
+/**
+ * A model for the game of Minesweeper. Holds a minesweeper board with the underlying
+ * tiles, and supports operations to set bombs on the board, reveal tiles, flag tiles,
+ * and save the current game.
+ * 
+ * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
+ */
 public class MinesweeperModel extends Observable {
 	private MinesweeperBoard board;
 	private boolean firstMove;
@@ -41,6 +48,11 @@ public class MinesweeperModel extends Observable {
 		// setBombs(board.bombCount);
 	}
 
+	/**
+	 * Constructs a Minesweeper model from a previous minesweeper board.
+	 * 
+	 * @param board A minesweeper board.
+	 */
 	public MinesweeperModel(MinesweeperBoard board) {
 		this.board = board;
 		firstMove = false;
@@ -241,6 +253,11 @@ public class MinesweeperModel extends Observable {
 		return board.bombCount;
 	}
 
+	/**
+	 * Returns whether or not it is the first move.
+	 * 
+	 * @return a boolean representing whether or not it is the first move.
+	 */
 	public boolean getFirstMove() {
 		return firstMove;
 	}
@@ -252,18 +269,38 @@ public class MinesweeperModel extends Observable {
 		board.saveBoard(time, name);
 	}
 
+	/**
+	 * Returns whether or not a save exists.
+	 * 
+	 * @return a boolean that represents whether or not a save exists.
+	 */
 	public boolean getSave() {
 		return save;
 	}
 
+	/**
+	 * Returns the time of the previous save.
+	 * 
+	 * @return a double that represents the time of the previous save.
+	 */
 	public double getTime() {
 		return board.time;
 	}
 
+	/**
+	 * Returns whether or not the game has been lost.
+	 * 
+	 * @return a boolean that represents whether or not the game has been lost
+	 */
 	public boolean getLost() {
 		return gameLost;
 	}
 
+	/**
+	 * Returns the player name.
+	 * 
+	 * @return a string that represents the current player's name.
+	 */
 	public String getName() {
 		return board.playerName;
 	}
