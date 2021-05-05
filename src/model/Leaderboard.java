@@ -14,15 +14,14 @@ import java.util.Scanner;
  *  This class is used to read and write to a text file that 
  *  will be used to store the top 10 scores for the minesweeper
  *  game.
- * @author Robert Schnell
- *
+ * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
  */
 public class Leaderboard {
 	/**
 	 * This class creates a player object that will be used
 	 * to help store a players name and score into the 
 	 * leaderboard.
-	 * @author Robert Schnell
+	 * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
 	 *
 	 */
 	public class Player {
@@ -54,11 +53,12 @@ public class Leaderboard {
 		}
 
 	}
+	
 	/**
 	 * This class creates a comparator for the player objects.
 	 * This allows collection methods to be used with the leaderboard
 	 * allowing it to be sorted.
-	 * @author Robert Schnell
+	 * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
 	 *
 	 */
 	public class playerSorter implements Comparator<Player> {
@@ -70,8 +70,10 @@ public class Leaderboard {
 		}
 
 	}
+	
 	// Arraylist to store the players on the leaderboard
 	private ArrayList<Player> leaderboard = new ArrayList<Player>();
+	
 	/**
 	 * Constructor method that reads in the text file and adds each
 	 * player to the arraylist.
@@ -94,6 +96,7 @@ public class Leaderboard {
 		leaderboard.sort(new playerSorter());
 		readFile.close();
 	}
+	
 	/**
 	 * Getter method to return the name of a player at a given
 	 * rank.
@@ -106,6 +109,7 @@ public class Leaderboard {
 		}
 		return leaderboard.get(rank-1).getName();
 	}
+	
 	/**
 	 * Getter method to return the score of a player at a given
 	 * rank.
@@ -118,6 +122,7 @@ public class Leaderboard {
 		}
 		return leaderboard.get(rank-1).getScore();
 	}
+	
 	/**
 	 * This method adds a players score to the text file and 
 	 * sorts the players. It will rewrite the entire text file and
@@ -152,5 +157,4 @@ public class Leaderboard {
 		}
 		writer.close();
 	}
-
 }
