@@ -1,5 +1,8 @@
+Baller 30
 Gary 46
+Misurda 100
 Player1 200
-Player2 250
 Player3 310
 Player4 400
+Bob 550
+Doge 600
