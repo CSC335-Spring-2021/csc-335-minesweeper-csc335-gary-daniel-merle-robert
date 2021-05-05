@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * Class representing a tile within minesweeper board. Tiles can contain mines
  * or be empty.
+ * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
  */
 public class Tile implements Serializable {
 

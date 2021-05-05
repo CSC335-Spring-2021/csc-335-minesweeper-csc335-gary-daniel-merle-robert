@@ -4,10 +4,15 @@ import model.MinesweeperBoard;
 import model.MinesweeperModel;
 
 /**
- * A controller for the minesweeper game. Holds a MinesweeperModel and provides
- * wrapper functions to interact with the model during gameplay.
+ * A controller class for the minesweeeper game. Holds a model and board instance 
+ * and offers methods to interact with the game model. Supports methods to reveal 
+ * a tile, flag a tile, reveal all mines on the board, determine if a save exists,
+ * determine if it's the first move, and determine if the game has been won or lost.
+ * 
+ * @author Gary Li, Daniel S. Lee, Robert Schnell, Merle Crutchfield
  */
 public class MinesweeperController {
+	
 	private static MinesweeperBoard board;
 	private MinesweeperModel model;
 
@@ -20,7 +25,7 @@ public class MinesweeperController {
 		this.model = model;
 		board = model.getBoard();
 	}
-
+	
 	/**
 	 * Prints a string representation of the board. For convenience in testing only.
 	 */
