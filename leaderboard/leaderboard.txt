@@ -1,0 +1,8 @@
+Player1 30
+Gary 46
+Player1 100
+Player2 200
+Player3 310
+Player4 400
+Player5 550
+Player6 600
